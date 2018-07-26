@@ -1,9 +1,14 @@
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Properties;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.activation.*;
 
 public class Email {
     static final String FROM = "bryce@millcreekagency.com";
@@ -20,7 +25,7 @@ public class Email {
         this.stmpPassword = stmpPassword;
     }
 
-    public void sendEmail(String to, String subject, String body ) {//, File attachment) {
+    public void sendEmail(String to, String subject, String body , String attachment) {
         Transport transport;
         Properties props = System.getProperties();
         props.put("mail.transport.protocol", "smtp");
@@ -32,11 +37,17 @@ public class Email {
 
         MimeMessage message = new MimeMessage(session);
         try {
+            MimeBodyPart messageBody = new MimeBodyPart();
+            Multipart multipart = new MimeMultipart();
             message.setFrom(new InternetAddress(FROM, FROMNAME));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
             message.setSubject(subject);
             message.setContent(body, "text/html");
-
+            messageBody.setFileName(attachment);
+            javax.activation.DataSource source = new FileDataSource(attachment);
+            messageBody.setDataHandler(new DataHandler(source));
+            multipart.addBodyPart(messageBody);
+            message.setContent(multipart);
             message.setHeader("X-SES-CONFIGURATION-SET", CONFIGSET);
 
             transport = session.getTransport();
@@ -59,7 +70,7 @@ public class Email {
     public String formatRenewalEmail() {
         return String.join(
                 System.getProperty("line.separator"),
-                ""
+                "<h1> Hello </h1>"
         );
     }
 }
