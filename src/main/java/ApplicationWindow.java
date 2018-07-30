@@ -38,7 +38,8 @@ public class ApplicationWindow extends Application {
 
 
     public static void main(String[] args) {
-        launch(args);
+        OceanHarbor oc = new OceanHarbor("/Users/bryce/policies/", false, false);
+        //launch(args);
         //System.out.println(javafx.scene.text.Font.getFamilies().toString());
     }
 

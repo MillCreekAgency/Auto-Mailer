@@ -1,10 +1,19 @@
 // Selenium Imports
+import javafx.print.PrinterJob;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.printing.PDFPageable;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
 // Util imports
+/// Print
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.PageRanges;
+import java.awt.print.PrinterException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -164,6 +173,7 @@ public class QQUpdater {
         driver.close();
     }
 
+
     private void addCoverages(int amount){
         for(int i = 0; i < amount; i++){
             this.findButton(driver.findElements(By.className("add-another")), "Add Coverage");
@@ -172,26 +182,13 @@ public class QQUpdater {
     }
 
     private void fillCoverages(HashMap<Integer, Double> coverages, List<WebElement> inputs) {
-        if (coverages.size() != inputs.size()) {
-            //this.addCoverages(coverages.size() - inputs.size());
-            System.out.println(inputs.size());
-        }
         /* TODO fill Coverages based on coverage name */
-        int i = 0;
-        for(Integer cssValue : coverages.keySet()) {
-            WebElement currentInput = inputs.get(i);
-            //currentInput.findElement(By.name("CoverageID")).findElement(By.cssSelector("option[value="+ cssValue + "]")).click();
-            currentInput.findElement(By.name("CovLimDed")).sendKeys(coverages.get(cssValue) + "");
-            i++;
-            if(i >= inputs.size()) {
-                break;
-            }
+        for(WebElement currentInput : inputs) {
+            Select coverageSelect = new Select(currentInput.findElement(By.name("CoverageID")));
+            WebElement input = currentInput.findElement(By.name("CovLimDed"));
+            double coverage = coverages.get(Integer.parseInt(coverageSelect.getFirstSelectedOption().getAttribute("value")));
+            fillNumberInput(input, coverage);
         }
-    }
-
-    private void scrollTo(int x, int y) {
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("document.getElements.scrollBy("+ x + "," + y + ")");
     }
 
     private void fillNumberInput(WebElement element, double number) {

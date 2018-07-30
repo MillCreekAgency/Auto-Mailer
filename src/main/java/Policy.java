@@ -23,6 +23,7 @@ public abstract class Policy {
     // Constants
     public static final String WORK_FOLDER = "/Users/brycethuilot/work/send-out/";
     public static final String RENEWAL_LETTER = "/Users/brycethuilot/GitHub/Auto-Mailer-Gui/RenewalLetter.rtf";
+    public static final String PRINT_FOLDER = "/Users/bryce/print";
 
     // Policy info
     public String name;
@@ -101,7 +102,6 @@ public abstract class Policy {
             OutputStream outputStream = new FileOutputStream(Policy.WORK_FOLDER + policyNumber + ".rtf");
             rtfeditor.write(outputStream, rtfLetter, 0, rtfLetter.getLength());
 
-            // TODO Add Print support
         } catch (Exception ex) {
             System.out.println("Failed to read letter");
             System.out.println(ex.getClass());
@@ -155,8 +155,11 @@ public abstract class Policy {
         // TODO add remote support
 
         this.displayInfo();
-
-        // TODO Print Support
+        try {
+            this.printMortgagee(fileLocation);
+        }catch (IOException ex) {
+            System.out.println("Could not print PDF");
+        }
 
         try {
             Files.move(Paths.get(fileLocation), Paths.get(WORK_FOLDER + this.policyNumber + ".pdf"));
@@ -164,6 +167,8 @@ public abstract class Policy {
             System.out.println("Unable to move policyFile");
         }
     }
+
+    public abstract void printMortgagee(String fileLocation) throws  IOException;
 
     public abstract String printCoverages();
 

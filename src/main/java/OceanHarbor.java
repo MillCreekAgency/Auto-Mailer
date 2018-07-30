@@ -1,5 +1,12 @@
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
+import org.apache.pdfbox.multipdf.Splitter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 public class OceanHarbor extends Policy {
 
@@ -15,6 +22,27 @@ public class OceanHarbor extends Policy {
             endingNumber += "0";
         }
         return currentPolicyNum.substring(0,currentPolicyNum.length() - 2) + endingNumber;
+    }
+
+    @Override
+    public void printMortgagee(String fileLocation) throws IOException {
+        File file = new File(fileLocation);
+        PDDocument doc = PDDocument.load(file);
+
+        Splitter splitter = new Splitter();
+        splitter.setStartPage(1);
+        splitter.setEndPage(4);
+        List<PDDocument> pages = splitter.split(doc);
+
+        PDFMergerUtility merger = new PDFMergerUtility();
+
+        PDDocument mortgagePDF = new PDDocument();
+        for(PDDocument page : pages) {
+             merger.appendDocument(mortgagePDF, page);
+        }
+
+        mortgagePDF.save(PRINT_FOLDER + this.policyNumber +"_Mortgage.pdf");
+
     }
 
     @Override
