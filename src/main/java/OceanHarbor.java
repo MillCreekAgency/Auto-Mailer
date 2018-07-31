@@ -10,8 +10,8 @@ import java.util.List;
 
 public class OceanHarbor extends Policy {
 
-    public OceanHarbor(String fileLocation, boolean letter, boolean emailOnly) {
-        super(fileLocation, letter, emailOnly);
+    public OceanHarbor(String fileLocation, boolean updateInQQ, boolean printMortgage, boolean mailToInsured, ApplicationWindow applicationWindow) {
+        super(fileLocation, updateInQQ, printMortgage, mailToInsured, applicationWindow);
     }
 
     @Override

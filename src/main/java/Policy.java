@@ -17,12 +17,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 // User input
 import java.util.HashMap;
-import java.util.Scanner;
 
 public abstract class Policy {
     // Constants
-    public static final String WORK_FOLDER = "/Users/brycethuilot/work/send-out/";
-    public static final String RENEWAL_LETTER = "/Users/brycethuilot/GitHub/Auto-Mailer-Gui/RenewalLetter.rtf";
+    public static final String WORK_FOLDER = System.getProperty("user.home") + "policies/send-out/";
+    public static final String RENEWAL_LETTER = "../RenewalLetter.rtf";
     public static final String PRINT_FOLDER = "/Users/bryce/print";
 
     // Policy info
@@ -40,15 +39,20 @@ public abstract class Policy {
     protected String company;
     protected boolean dwelling;
 
-    // Settings for renewal
-    private boolean letter;
-    private boolean emailOnly;
+    private ApplicationWindow applicationWindow;
 
-    public Policy(String fileLocation, boolean letter, boolean emailOnly) {
+    // Settings for renewal
+    private boolean updateInQQ;
+    private boolean printMortgagee;
+    private boolean mailToInsured;
+
+    public Policy(String fileLocation, boolean updateInQQ, boolean printMortgage, boolean mailToInsured, ApplicationWindow applicationWindow) {
         this.fileLocation = fileLocation;
-        this.letter = letter;
-        this.emailOnly = emailOnly;
-        this.mailToInsured(fileLocation);
+        this.updateInQQ = updateInQQ;
+        this.applicationWindow = applicationWindow;
+        this.printMortgagee = printMortgage;
+        this.mailToInsured = mailToInsured;
+        this.updatePolicy(fileLocation);
     }
 
     public static String getPDFText(String fileLocation) throws IOException{
@@ -69,7 +73,7 @@ public abstract class Policy {
 
     public abstract void getInfoFromPolicy(String fileLocation) throws IOException;
 
-    public void makeLetter(String name, String address, String policyNumber){
+    public void makeLetter(){
         try {
             // Create policyFile input Stream
             File letterTemplate = new File(Policy.RENEWAL_LETTER);
@@ -111,7 +115,7 @@ public abstract class Policy {
 
     public abstract String getOldPolicyNum(String currentPolicyNum);
 
-    public void mailToInsured(String fileLocation) {
+    public void updatePolicy(String fileLocation) {
         // Gets insured info from policy
         try {
             this.getInfoFromPolicy(fileLocation);
@@ -119,44 +123,32 @@ public abstract class Policy {
             System.out.println("Unable to open PDF");
             return;
         }
-        QQUpdater updater = new QQUpdater();
+        QQUpdater updater = new QQUpdater(applicationWindow.getUsername(), applicationWindow.getPassword());
 
-        // TODO Launch Web Driver
         String email = updater.getEmail(this.getOldPolicyNum(this.policyNumber));
 
         //Create scanner
-        Scanner scanner = new Scanner(System.in);
-        if(!emailOnly) {
+        if(updateInQQ) {
             updater.updatePolicy(this.policyNumber, this.premium, this.coverages, new double[]{this.deductible, this.hurricaneDeductible}, this.dwelling);
         }
-        // Check if email was recieved
-        if(this.letter) {
-            // Ask if sending a letter is what to if no email is present
-            System.out.println("Send letter to insured? [Y/n]");
-            String sendLetter = scanner.nextLine();
-            // See what user responded
-            if (!sendLetter.equals("n")) {
-                // Make and send letter
-                this.makeLetter(this.name, this.address, this.policyNumber);
+        // Check if email was received
+        if(mailToInsured) {
+            if (this.letter || email.equals("")) {
+                // Make letter using insured info
+                this.makeLetter();
+            } else {
+                // TODO check email
+                // Send email
+                this.getEmailPassword(email, fileLocation, this.applicationWindow);
             }
-        }else {
-            // See if Web Driver got the correct email
-            System.out.println("Does " + email + " look correct? [Y/n]");
-            String useEmail = scanner.nextLine();
-            // If not ask the user for the correct email
-            if(useEmail.equals("n")) {
-                System.out.println("Please enter email:");
-                email = scanner.nextLine();
-            }
-            // Send email
-            this.sendEmail(email, fileLocation, "Hello");
         }
 
-        // TODO add remote support
 
         this.displayInfo();
         try {
-            this.printMortgagee(fileLocation);
+            if(printMortgagee) {
+                this.printMortgagee(fileLocation);
+            }
         }catch (IOException ex) {
             System.out.println("Could not print PDF");
         }
@@ -173,6 +165,7 @@ public abstract class Policy {
     public abstract String printCoverages();
 
     public void displayInfo() {
+        // TODO display Info on application
         System.out.println(String.join(
                 System.getProperty("line.separator"),
                 "Insured Name: " + this.name,
@@ -186,9 +179,11 @@ public abstract class Policy {
         );
     }
 
+    public void getEmailPassword(String to, String fileLocation, ApplicationWindow applicationWindow) {
+        applicationWindow.getEmailPassword(to, fileLocation, this);
+    }
+
     public void sendEmail(String to, String fileLocation, String password) {
-        // Get the password to the email account
-        // TODO fix get password
         // Create email class
         Email email = new Email(password);
         // Get subject line

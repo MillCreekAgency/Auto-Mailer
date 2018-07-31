@@ -18,10 +18,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class QQUpdater {
-    static final String LOGIN = "dean@millcreekagency.com";
+    String login;
+    String password;
     WebDriver driver;
 
-    public QQUpdater(){
+    public QQUpdater(String login, String password){
+        this.login = login;
+        this.password = password;
         driver = new ChromeDriver();
         driver.navigate().to("https://app.qqcatalyst.com/Contacts/Search");
         this.login();
@@ -207,14 +210,9 @@ public class QQUpdater {
 
 
     private void login() {
-        //System.out.println("Please enter password for " + LOGIN);
-        /*Console console = System.console();
-        char[] passwordArray = console.readPassword("Please enter your password: ");
-        String password = new String(passwordArray);*/
-        String password = "Mill1225";
 
         if(driver.getCurrentUrl().contains("login.qqcatalyst.com")) {
-            driver.findElement(By.name("txtEmail")).sendKeys(LOGIN);
+            driver.findElement(By.name("txtEmail")).sendKeys(login);
             driver.findElement(By.id("txtPassword")).sendKeys(password);
             driver.findElement(By.id("lnkSubmit")).click();
             this.sleep(1);
