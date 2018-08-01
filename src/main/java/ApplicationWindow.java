@@ -60,7 +60,7 @@ public class ApplicationWindow extends Application {
         return username;
     }
 
-    public void setUpLogin(Stage primaryStage) {
+    public void setUpLogin() {
         Button login = new Button("Login");
         Text scenetitle = new Text("Welcome");
         scenetitle.setFont(Font.font("Helvetica Neue", FontWeight.NORMAL, 20));
@@ -83,7 +83,7 @@ public class ApplicationWindow extends Application {
             public void handle(ActionEvent event) {
                 login(userTextField.getText(), pwBox.getText());
                 root.getChildren().remove(0,root.getChildren().size());
-                setUpUpdater(primaryStage);
+                setUpUpdater();
             }
         });
 
@@ -91,12 +91,12 @@ public class ApplicationWindow extends Application {
 
     }
 
-    public void setUpUpdater(Stage primaryStage) {
-        this.setUpFileSelector(primaryStage);
+    public void setUpUpdater() {
+        this.setUpFileSelector();
         this.setText();
         this.createCompanySelector(root);
         this.setOptionMenu();
-        this.updateButton(primaryStage, this);
+        this.updateButton(this);
     }
 
     @Override
@@ -107,16 +107,16 @@ public class ApplicationWindow extends Application {
         this.setUpGridPane();
 
         if (password == null || username == null) {
-            this.setUpLogin(primaryStage);
+            this.setUpLogin();
         }else {
-            this.setUpUpdater(primaryStage);
+            this.setUpUpdater();
         }
 
         primaryStage.setScene(new Scene(root, 800,550));
         primaryStage.show();
     }
 
-    public void setPolicyFile(File policyFile, Stage primaryStage) {
+    public void setPolicyFile(File policyFile) {
         this.policyFile = policyFile;
         root.getChildren().remove(this.fileSelect);
         filePath = new Text(policyFile.getName());
@@ -127,7 +127,7 @@ public class ApplicationWindow extends Application {
         cancelButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                setUpFileSelector(primaryStage);
+                setUpFileSelector();
             }
         });
         root.add(cancelButton, 2,CHOOSE_POLICY);
@@ -195,14 +195,19 @@ public class ApplicationWindow extends Application {
         GridPane.setHalignment(printForMortgage, HPos.CENTER);
     }
 
+    private Text createText(String str, int size, FontWeight fontWeight) {
+        Text text = new Text(str);
+        text.setFont(Font.font("Helventica Neue", fontWeight, size));
+        return text;
+    }
+
     public void setText() {
-        title = new Text("Automatic Insurance Mailer");
-        title.setFont(new Font("Helvetica Neue", 16));
-        this.root.add(this.title, 1, TITLE_ROW);
+        title = this.createText("Mill Creek Insurance Mailer", 16, FontWeight.BOLD);
+        this.root.add(title, 1, TITLE_ROW);
         GridPane.setHalignment(title, HPos.CENTER);
     }
 
-    public void setUpFileSelector(Stage primaryStage) {
+    public void setUpFileSelector() {
         root.getChildren().remove(cancelButton);
         root.getChildren().remove(filePath);
 
@@ -214,7 +219,7 @@ public class ApplicationWindow extends Application {
                     public void handle(ActionEvent event) {
                         File file = fileChooser.showOpenDialog(primaryStage);
                         if(file != null) {
-                            setPolicyFile(file, primaryStage);
+                            setPolicyFile(file);
                         }
                     }
                 }
@@ -232,12 +237,16 @@ public class ApplicationWindow extends Application {
 
     }
 
-    private void pleaseSelectPolicyPopup(Stage primaryStage) {
+    private void pleaseSelectPolicyPopup() {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(primaryStage);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
+        Scene dialogScene = new Scene(grid, 200, 200);
+        dialog.setScene(dialogScene);
+        dialog.show();
+
         Text title = new Text("ERROR");
         title.setFont(Font.font("Helvetica Neue", FontWeight.BOLD,20));
         grid.add(title, 0, 0);
@@ -250,9 +259,6 @@ public class ApplicationWindow extends Application {
             }
         });
         grid.add(ok, 0, 2);
-        Scene dialogScene = new Scene(grid, 200, 200);
-        dialog.setScene(dialogScene);
-        dialog.show();
     }
 
     public void sendToInsured(String email, String filelocation, Policy policy, ApplicationWindow app) {
@@ -286,18 +292,19 @@ public class ApplicationWindow extends Application {
     }
 
 
-    private void updateButton(Stage primaryStage, ApplicationWindow application){
+    private void updateButton(ApplicationWindow application){
         Button update = new Button("Update Policy");
         update.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if(policyFile == null) {
-                   pleaseSelectPolicyPopup(primaryStage);
+                   pleaseSelectPolicyPopup();
                 }else {
                     OceanHarbor oc = new OceanHarbor(policyFile.getAbsolutePath(), updateInQQ.isSelected(), printForMortgage.isSelected(), sendToInsured.isSelected(), application);
                 }
             }
         });
         root.add(update, 1, UPDATE_BUTTON);
+        GridPane.setHalignment(update, HPos.CENTER);
     }
 }
