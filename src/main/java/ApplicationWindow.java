@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -247,10 +248,8 @@ public class ApplicationWindow extends Application {
         dialog.setScene(dialogScene);
         dialog.show();
 
-        Text title = new Text("ERROR");
-        title.setFont(Font.font("Helvetica Neue", FontWeight.BOLD,20));
-        grid.add(title, 0, 0);
-        grid.add(new Text("Please choose a policy to update"), 0, 1);
+        grid.add(this.createText("ERROR", 20, FontWeight.BOLD), 0, 0);
+        grid.add(this.createText("Please select a policy to update", 12, FontWeight.NORMAL), 0, 1);
         Button ok = new Button("OK");
         ok.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -268,13 +267,10 @@ public class ApplicationWindow extends Application {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         // email Option
-        Text emailOption = new Text("Would you like to send an email");
-        emailOption.setFont(Font.font("Helvetica Neue", FontWeight.NORMAL,20));
-        grid.add(emailOption, 1, 0);
+        this.addToGrid(grid, this.createText("Would you like to send an email", 20, FontWeight.NORMAL), 1, 0);
         // Letter option
-        Text letterOption = new Text("Or send an physical letter");
-        letterOption.setFont(Font.font("Helvetica Neue", FontWeight.NORMAL,20));
-        grid.add(letterOption, 1, 2);
+        this.addToGrid(grid, this.createText("Or send a physical Letter", 20, FontWeight.NORMAL), 1, 2);
+
         Button emailButton = new Button("Email");
         emailButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -284,11 +280,24 @@ public class ApplicationWindow extends Application {
         });
 
         Button letterButton = new Button("Letter");
+        letterButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                policy.makeLetter();
+            }
+        });
 
-        grid.add(emailButton, 0, 3);
+        this.addToGrid(grid, emailButton, 0, 4);
+        this.addToGrid(grid, letterButton, 2, 4);
+
         Scene dialogScene = new Scene(grid, 200, 200);
         dialog.setScene(dialogScene);
         dialog.show();
+    }
+
+    private void addToGrid(GridPane grid, Node node, int columnIndex, int rowIndex) {
+        grid.add(node, columnIndex, rowIndex);
+        GridPane.setHalignment(node, HPos.CENTER);
     }
 
 
