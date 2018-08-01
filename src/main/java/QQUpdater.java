@@ -55,7 +55,7 @@ public class QQUpdater {
 
     }
 
-    public void updatePolicy(String policyNum, double premium, HashMap<Integer, Double> coverages, double[] deductibles, boolean dwelling) {
+    public void updatePolicy(String policyNum, double premium, HashMap<Integer, Double> coverages, int[] deductibles, boolean dwelling) {
         WebElement renewalButton = driver.findElement(By.className("PolicyActionRenew"));
         while (!renewalButton.isDisplayed()) {
             List<WebElement> labels = driver.findElements(By.className("Label"));
@@ -195,6 +195,11 @@ public class QQUpdater {
     }
 
     private void fillNumberInput(WebElement element, double number) {
+        element.clear();
+        element.sendKeys(number + "");
+    }
+
+    private void fillNumberInput(WebElement element, int number) {
         element.clear();
         element.sendKeys(number + "");
     }

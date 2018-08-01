@@ -255,7 +255,7 @@ public class ApplicationWindow extends Application {
         dialog.show();
     }
 
-    private void sendToInsured(String email, String filelocation, Policy policy, ApplicationWindow app) {
+    public void sendToInsured(String email, String filelocation, Policy policy, ApplicationWindow app) {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(primaryStage);

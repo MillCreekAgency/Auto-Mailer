@@ -22,7 +22,7 @@ public abstract class Policy {
     // Constants
     public static final String WORK_FOLDER = System.getProperty("user.home") + "policies/send-out/";
     public static final String RENEWAL_LETTER = "../RenewalLetter.rtf";
-    public static final String PRINT_FOLDER = "/Users/bryce/print";
+    public static final String PRINT_FOLDER = System.getProperty("user.home") + "print/";
 
     // Policy info
     public String name;
@@ -33,8 +33,8 @@ public abstract class Policy {
     protected String expirationDate;
     protected HashMap<Integer, Double> coverages;
     protected double premium;
-    protected double deductible;
-    protected double hurricaneDeductible;
+    protected int deductible;
+    protected int hurricaneDeductible;
     protected boolean renewal;
     protected String company;
     protected boolean dwelling;
@@ -129,18 +129,11 @@ public abstract class Policy {
 
         //Create scanner
         if(updateInQQ) {
-            updater.updatePolicy(this.policyNumber, this.premium, this.coverages, new double[]{this.deductible, this.hurricaneDeductible}, this.dwelling);
+            updater.updatePolicy(this.policyNumber, this.premium, this.coverages, new int[]{this.deductible, this.hurricaneDeductible}, this.dwelling);
         }
         // Check if email was received
         if(mailToInsured) {
-            if (this.letter || email.equals("")) {
-                // Make letter using insured info
-                this.makeLetter();
-            } else {
-                // TODO check email
-                // Send email
-                this.getEmailPassword(email, fileLocation, this.applicationWindow);
-            }
+           applicationWindow.sendToInsured(email, fileLocation, this, applicationWindow);
         }
 
 

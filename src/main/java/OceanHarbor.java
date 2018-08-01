@@ -19,7 +19,7 @@ public class OceanHarbor extends Policy {
         String endingNumber = currentPolicyNum.substring(currentPolicyNum.length() - 2);
         endingNumber = (Integer.parseInt(endingNumber) - 1) + "";
         if(endingNumber.length() == 1) {
-            endingNumber += "0";
+            endingNumber  = "0" + endingNumber;
         }
         return currentPolicyNum.substring(0,currentPolicyNum.length() - 2) + endingNumber;
     }
@@ -62,14 +62,15 @@ public class OceanHarbor extends Policy {
 
         this.premium = Double.parseDouble(cutSection(pdfText, "Total Policy Premium: ", 8));
 
-        this.deductible = Double.parseDouble(this.cutSection(pdfText, "otherwise\n", 6));
+        this.deductible = Integer.parseInt(this.cutSection(pdfText, "otherwise\n", 6));
 
-        String hurricaneDed = this.cutSection(pdfText, "Ded.: ", 3);
-        if (hurricaneDed.equals("N/A")) {
+        String hurricaneDed = this.cutSection(pdfText, "Ded.: ", 2);
+        try {
+            this.hurricaneDeductible = Integer.parseInt(hurricaneDed.replace("%", ""));
+        } catch(NumberFormatException ex) {
             this.hurricaneDeductible = 0;
-        } else {
-            this.hurricaneDeductible = Double.parseDouble(hurricaneDed);
         }
+
 
         int dateStartIndex = pdfText.indexOf("FROM TO");
         String[] dates = pdfText.substring(dateStartIndex + 9, pdfText.indexOf("\n", dateStartIndex + 9)).split(" ");
