@@ -150,7 +150,7 @@ public class ApplicationWindow extends Application {
 
     }
 
-    public void getEmailPassword(String to, String fileLocation, Policy policy){
+    public void getEmailPassword(String to, Policy policy){
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(primaryStage);
@@ -166,19 +166,43 @@ public class ApplicationWindow extends Application {
             @Override
             public void handle(ActionEvent event) {
                 dialog.close();
-                policy.sendEmail(to, fileLocation, emailPassword.getText());
+                policy.sendEmail(to, emailPassword.getText());
             }
         });
         grid.add(ok, 0, 2);
-        Scene dialogScene = new Scene(grid, 200, 200);
+        Scene dialogScene = new Scene(grid, 600, 500);
+        dialog.setScene(dialogScene);
+        dialog.show();
+    }
+
+    public void changeEmail(String to, Policy policy) {
+        final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(primaryStage);
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.add(this.createText("The email will be sent to the address below",  16, FontWeight.NORMAL), 1 , 1);
+        grid.add(this.createText("If you would like to change the address it is sent to, change the value in the box", 12, FontWeight.NORMAL), 1, 1);
+        TextField emailInput = new TextField(to);
+        GridPane.setHalignment(emailInput, HPos.CENTER);
+        grid.add(emailInput, 0, 2, 3, 1);
+        Button ok = new Button("OK");
+        ok.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                getEmailPassword(emailInput.getText(), policy);
+                dialog.close();
+            }
+        });
+        grid.add(ok, 1, 3);
+        GridPane.setHalignment(ok, HPos.CENTER);
+        Scene dialogScene = new Scene(grid, 400, 300);
         dialog.setScene(dialogScene);
         dialog.show();
     }
 
     public void setOptionMenu(){
-        Text optionTitle = new Text("Options");
-        root.add(optionTitle, 1, OPTION_SELECTION - 1);
-        GridPane.setHalignment(optionTitle, HPos.CENTER);
+        root.add(this.createText("Options", 16, FontWeight.NORMAL), 1, OPTION_SELECTION - 1);
 
         updateInQQ = new CheckBox("Update in QQ");
         updateInQQ.setSelected(true);
@@ -199,6 +223,7 @@ public class ApplicationWindow extends Application {
     private Text createText(String str, int size, FontWeight fontWeight) {
         Text text = new Text(str);
         text.setFont(Font.font("Helventica Neue", fontWeight, size));
+        GridPane.setHalignment(text, HPos.CENTER);
         return text;
     }
 
@@ -209,6 +234,7 @@ public class ApplicationWindow extends Application {
     }
 
     public void setUpFileSelector() {
+        policyFile = null;
         root.getChildren().remove(cancelButton);
         root.getChildren().remove(filePath);
 
@@ -244,7 +270,7 @@ public class ApplicationWindow extends Application {
         dialog.initOwner(primaryStage);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        Scene dialogScene = new Scene(grid, 200, 200);
+        Scene dialogScene = new Scene(grid, 400, 300);
         dialog.setScene(dialogScene);
         dialog.show();
 
@@ -260,7 +286,7 @@ public class ApplicationWindow extends Application {
         grid.add(ok, 0, 2);
     }
 
-    public void sendToInsured(String email, String filelocation, Policy policy, ApplicationWindow app) {
+    public void sendToInsured(String email, Policy policy, ApplicationWindow app) {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(primaryStage);
@@ -275,7 +301,8 @@ public class ApplicationWindow extends Application {
         emailButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                policy.getEmailPassword(email, filelocation, app);
+                dialog.close();
+                policy.getEmailInfo(email, app);
             }
         });
 
@@ -283,6 +310,7 @@ public class ApplicationWindow extends Application {
         letterButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                dialog.close();
                 policy.makeLetter();
             }
         });
@@ -290,7 +318,7 @@ public class ApplicationWindow extends Application {
         this.addToGrid(grid, emailButton, 0, 4);
         this.addToGrid(grid, letterButton, 2, 4);
 
-        Scene dialogScene = new Scene(grid, 200, 200);
+        Scene dialogScene = new Scene(grid, 400, 300);
         dialog.setScene(dialogScene);
         dialog.show();
     }
@@ -309,7 +337,7 @@ public class ApplicationWindow extends Application {
                 if(policyFile == null) {
                    pleaseSelectPolicyPopup();
                 }else {
-                    OceanHarbor oc = new OceanHarbor(policyFile.getAbsolutePath(), updateInQQ.isSelected(), printForMortgage.isSelected(), sendToInsured.isSelected(), application);
+                    OceanHarbor oc = new OceanHarbor(policyFile, updateInQQ.isSelected(), printForMortgage.isSelected(), sendToInsured.isSelected(), application);
                 }
             }
         });

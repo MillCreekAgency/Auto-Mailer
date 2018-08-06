@@ -10,8 +10,8 @@ import java.util.List;
 
 public class OceanHarbor extends Policy {
 
-    public OceanHarbor(String fileLocation, boolean updateInQQ, boolean printMortgage, boolean mailToInsured, ApplicationWindow applicationWindow) {
-        super(fileLocation, updateInQQ, printMortgage, mailToInsured, applicationWindow);
+    public OceanHarbor(File policyFile, boolean updateInQQ, boolean printMortgage, boolean mailToInsured, ApplicationWindow applicationWindow) {
+        super(policyFile, updateInQQ, printMortgage, mailToInsured, applicationWindow);
     }
 
     @Override
@@ -25,9 +25,8 @@ public class OceanHarbor extends Policy {
     }
 
     @Override
-    public void printMortgagee(String fileLocation) throws IOException {
-        File file = new File(fileLocation);
-        PDDocument doc = PDDocument.load(file);
+    public void printMortgagee() throws IOException {
+        PDDocument doc = PDDocument.load(this.policyFile);
 
         Splitter splitter = new Splitter();
         splitter.setStartPage(1);
@@ -46,8 +45,8 @@ public class OceanHarbor extends Policy {
     }
 
     @Override
-    public void getInfoFromPolicy(String fileLocation) throws IOException {
-        String pdfText = this.getPDFText(fileLocation);
+    public void getInfoFromPolicy() throws IOException {
+        String pdfText = getPDFText(this.policyFile);
         String nameAndAddress = pdfText.substring(pdfText.indexOf("Insured\n") + 8);
         nameAndAddress = nameAndAddress.substring(0, nameAndAddress.indexOf("OCEAN HARBOR CASUALTY"));
 

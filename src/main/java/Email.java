@@ -34,16 +34,20 @@ public class Email {
 
         MimeMessage message = new MimeMessage(session);
         try {
-            MimeBodyPart messageBody = new MimeBodyPart();
+            MimeBodyPart emailAttachment = new MimeBodyPart();
+            MimeBodyPart emailBody = new MimeBodyPart();
             Multipart multipart = new MimeMultipart();
             message.setFrom(new InternetAddress(FROM, FROMNAME));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
             message.setSubject(subject);
-            message.setContent(body, "text/html");
-            messageBody.setFileName(fileName);
+            emailBody.setContent(body, "text/html");
+            multipart.addBodyPart(emailBody);
+
+            emailAttachment.setFileName(fileName);
             javax.activation.DataSource source = new FileDataSource(attachment);
-            messageBody.setDataHandler(new DataHandler(source));
-            multipart.addBodyPart(messageBody);
+            emailAttachment.setDataHandler(new DataHandler(source));
+            multipart.addBodyPart(emailAttachment);
+
             message.setContent(multipart);
             message.setHeader("X-SES-CONFIGURATION-SET", CONFIGSET);
 

@@ -27,7 +27,6 @@ public abstract class Policy {
     // Policy info
     public String name;
     public String policyNumber;
-    protected String fileLocation;
     protected String address;
     protected String effectiveDate;
     protected String expirationDate;
@@ -39,6 +38,8 @@ public abstract class Policy {
     protected String company;
     protected boolean dwelling;
 
+    protected File policyFile;
+
     private ApplicationWindow applicationWindow;
 
     // Settings for renewal
@@ -46,17 +47,16 @@ public abstract class Policy {
     private boolean printMortgagee;
     private boolean mailToInsured;
 
-    public Policy(String fileLocation, boolean updateInQQ, boolean printMortgage, boolean mailToInsured, ApplicationWindow applicationWindow) {
-        this.fileLocation = fileLocation;
+    public Policy(File policyFile, boolean updateInQQ, boolean printMortgage, boolean mailToInsured, ApplicationWindow applicationWindow) {
+        this.policyFile = policyFile;
         this.updateInQQ = updateInQQ;
         this.applicationWindow = applicationWindow;
         this.printMortgagee = printMortgage;
         this.mailToInsured = mailToInsured;
-        this.updatePolicy(fileLocation);
+        this.updatePolicy();
     }
 
-    public static String getPDFText(String fileLocation) throws IOException{
-        File policy = new File(fileLocation);
+    public static String getPDFText(File policy) throws IOException{
         RandomAccessRead randomAccessFile = new RandomAccessFile(policy, "r");
         PDFParser parser = new PDFParser(randomAccessFile);
         parser.parse();
@@ -71,7 +71,7 @@ public abstract class Policy {
         return pdfText;
     }
 
-    public abstract void getInfoFromPolicy(String fileLocation) throws IOException;
+    public abstract void getInfoFromPolicy() throws IOException;
 
     public void makeLetter(){
         try {
@@ -115,10 +115,10 @@ public abstract class Policy {
 
     public abstract String getOldPolicyNum(String currentPolicyNum);
 
-    public void updatePolicy(String fileLocation) {
+    public void updatePolicy() {
         // Gets insured info from policy
         try {
-            this.getInfoFromPolicy(fileLocation);
+            this.getInfoFromPolicy();
         } catch(IOException ioEx) {
             System.out.println("Unable to open PDF");
             return;
@@ -133,27 +133,27 @@ public abstract class Policy {
         }
         // Check if email was received
         if(mailToInsured) {
-           applicationWindow.sendToInsured(email, fileLocation, this, applicationWindow);
+           applicationWindow.sendToInsured(email, this, applicationWindow);
         }
 
 
         this.displayInfo();
         try {
             if(printMortgagee) {
-                this.printMortgagee(fileLocation);
+                this.printMortgagee();
             }
         }catch (IOException ex) {
             System.out.println("Could not print PDF");
         }
 
         try {
-            Files.move(Paths.get(fileLocation), Paths.get(WORK_FOLDER + this.policyNumber + ".pdf"));
+            Files.move(Paths.get(policyFile.getAbsolutePath()), Paths.get(WORK_FOLDER + this.policyNumber + ".pdf"));
         } catch (Exception ex) {
             System.out.println("Unable to move policyFile");
         }
     }
 
-    public abstract void printMortgagee(String fileLocation) throws  IOException;
+    public abstract void printMortgagee() throws  IOException;
 
     public abstract String printCoverages();
 
@@ -172,11 +172,12 @@ public abstract class Policy {
         );
     }
 
-    public void getEmailPassword(String to, String fileLocation, ApplicationWindow applicationWindow) {
-        applicationWindow.getEmailPassword(to, fileLocation, this);
+    public void getEmailInfo(String to, ApplicationWindow applicationWindow) {
+        applicationWindow.changeEmail(to, this);
     }
 
-    public void sendEmail(String to, String fileLocation, String password) {
+
+    public void sendEmail(String to, String password) {
         // Create email class
         Email email = new Email(password);
         // Get subject line
@@ -184,7 +185,7 @@ public abstract class Policy {
         // Get email body
         String body = email.emailBody(this.name, this.policyNumber, this.company, this.effectiveDate, this.expirationDate, this.renewal);
         // Send email
-        email.sendEmail(to, subject, body, fileLocation, this.policyNumber);
+        email.sendEmail(to, subject, body, this.policyFile.getAbsolutePath(), this.policyNumber + ".pdf");
     }
 
     public String cutSection(String str, String start, int length) {
