@@ -7,7 +7,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -181,11 +184,11 @@ public class ApplicationWindow extends Application {
         dialog.initOwner(primaryStage);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        grid.add(this.createText("The email will be sent to the address below",  16, FontWeight.NORMAL), 1 , 1);
-        grid.add(this.createText("If you would like to change the address it is sent to, change the value in the box", 12, FontWeight.NORMAL), 1, 1);
+        grid.add(this.createText("The email will be sent to the address below",  16, FontWeight.NORMAL), 1 , 0);
+        grid.add(this.createText("If you would like to change the address it is sent to, change the value in the box", 12, FontWeight.NORMAL), 1, 2);
         TextField emailInput = new TextField(to);
         GridPane.setHalignment(emailInput, HPos.CENTER);
-        grid.add(emailInput, 0, 2, 3, 1);
+        grid.add(emailInput, 0, 3, 3, 1);
         Button ok = new Button("OK");
         ok.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -194,7 +197,7 @@ public class ApplicationWindow extends Application {
                 dialog.close();
             }
         });
-        grid.add(ok, 1, 3);
+        grid.add(ok, 1, 5);
         GridPane.setHalignment(ok, HPos.CENTER);
         Scene dialogScene = new Scene(grid, 400, 300);
         dialog.setScene(dialogScene);
@@ -237,6 +240,27 @@ public class ApplicationWindow extends Application {
         policyFile = null;
         root.getChildren().remove(cancelButton);
         root.getChildren().remove(filePath);
+
+        VBox dragTarget = new VBox();
+
+        dragTarget.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                Dragboard db = event.getDragboard();
+
+                boolean success = false;
+                if(db.hasString()) {
+                    success = true;
+                    File policy = new File(db.getString());
+                    setPolicyFile(policy);
+                }
+
+                event.setDropCompleted(success);
+                event.consume();
+            }
+        });
+
+        root.add(dragTarget, 1, CHOOSE_POLICY);
 
         final FileChooser fileChooser = new FileChooser();
         this.fileSelect = new Button("Choose policy");

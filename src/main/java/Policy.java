@@ -164,7 +164,7 @@ public abstract class Policy {
                 "Insured Name: " + this.name,
                 "Address: " + this.address,
                 "Policy Number: " + this.policyNumber,
-                "Coverages: " + this.printCoverages(),
+                "Coverages: \n" + this.printCoverages(),
                 "Premium: " + this.premium,
                 "Deductible: " + this.deductible,
                 "Hurricane Deductible: " + this.hurricaneDeductible
