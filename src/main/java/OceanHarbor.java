@@ -88,7 +88,7 @@ public class OceanHarbor extends Policy {
         StringBuilder coverages = new StringBuilder();
         int i = 65;
         for(Integer cssValue : this.coverages.keySet()) {
-            coverages.append("Coverage " + (char) (i) + ": $" + this.coverages.get(cssValue));
+            coverages.append("Coverage " + (char) (i) + ": $" + this.coverages.get(cssValue) + "\n");
             i++;
         }
         return coverages.toString();

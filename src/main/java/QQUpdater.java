@@ -31,6 +31,13 @@ public class QQUpdater {
     }
 
     public String getEmail(String oldPolicyNum){
+        sleep(2);
+        try{
+          driver.findElement(By.className("wm-close-button")).click();
+          sleep(2);
+        } catch(org.openqa.selenium.NoSuchElementException ex) {
+            System.out.println(ex.getLocalizedMessage());
+        }
         // Enter old policy number into search bar
         driver.findElement(By.id("contact-search-text")).sendKeys(oldPolicyNum);
         // Click go for search
@@ -133,7 +140,7 @@ public class QQUpdater {
         home.click();
         this.sleep(1);
 
-        List<WebElement> coverageInputs = driver.findElements(By.className("PolicyLiabilityCoverageContainer"));
+        List<WebElement> coverageInputs = driver.findElements(By.className("SectionItem"));//"PolicyLiabilityCoverageContainer"));
         this.fillCoverages(coverages, coverageInputs);
 
         int i = 0;
@@ -153,6 +160,13 @@ public class QQUpdater {
         this.findButton(finishButtons, "Finish");
 
         this.sleep(3);
+
+        try {
+            WebElement popup = driver.findElement(By.id("simplemodal-container"));
+            popup.findElement(By.className("submit")).click();
+        }catch(org.openqa.selenium.NoSuchElementException ex) {
+            System.out.println(ex.getLocalizedMessage());
+        }
 
         while(!driver.getCurrentUrl().contains("Workflows/IssueMultiPolicy")) {
             this.sleep(1);
@@ -176,21 +190,18 @@ public class QQUpdater {
         driver.close();
     }
 
-
-    private void addCoverages(int amount){
-        for(int i = 0; i < amount; i++){
-            this.findButton(driver.findElements(By.className("add-another")), "Add Coverage");
-            sleep(1);
-        }
-    }
-
     private void fillCoverages(HashMap<Integer, Double> coverages, List<WebElement> inputs) {
         /* TODO fill Coverages based on coverage name */
         for(WebElement currentInput : inputs) {
-            Select coverageSelect = new Select(currentInput.findElement(By.name("CoverageID")));
-            WebElement input = currentInput.findElement(By.name("CovLimDed"));
-            double coverage = coverages.get(Integer.parseInt(coverageSelect.getFirstSelectedOption().getAttribute("value")));
-            fillNumberInput(input, coverage);
+            try {
+                WebElement selector = currentInput.findElement(By.name("CoverageID"));
+                Select coverageSelect = new Select(selector);
+                WebElement input = currentInput.findElement(By.name("CovLimDed"));
+                double coverage = coverages.get(Integer.parseInt(coverageSelect.getFirstSelectedOption().getAttribute("value")));
+                fillNumberInput(input, coverage);
+            }catch (org.openqa.selenium.NoSuchElementException ex) {
+                System.out.println(ex.getLocalizedMessage());
+            }
         }
     }
 
