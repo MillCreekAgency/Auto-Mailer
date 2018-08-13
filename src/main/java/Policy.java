@@ -11,6 +11,7 @@ import javax.swing.text.rtf.RTFEditorKit;
 // Java IO
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 // Date formating
 import java.text.SimpleDateFormat;
@@ -21,7 +22,7 @@ import java.util.HashMap;
 public abstract class Policy {
     // Constants
     public static final String WORK_FOLDER = System.getProperty("user.home") + "policies/send-out/";
-    public static final String RENEWAL_LETTER = "../RenewalLetter.rtf";
+    public static final String RENEWAL_LETTER = "RenewalLetter.rtf";
     public static final String PRINT_FOLDER = System.getProperty("user.home") + "print/";
 
     // Policy info
@@ -76,7 +77,9 @@ public abstract class Policy {
     public void makeLetter(){
         try {
             // Create policyFile input Stream
-            File letterTemplate = new File(Policy.RENEWAL_LETTER);
+            Path currentRelativePath = Paths.get("");
+            String s = currentRelativePath.toAbsolutePath().toString();
+            File letterTemplate = new File(currentRelativePath.toAbsolutePath().toString()  + "/" + Policy.RENEWAL_LETTER);
             InputStream targetStream = new FileInputStream(letterTemplate);
             // Create RTFEditorKit
             RTFEditorKit rtfeditor = new RTFEditorKit();

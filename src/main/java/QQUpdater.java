@@ -11,9 +11,6 @@ import org.openqa.selenium.support.ui.Select;
 /// Print
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.standard.PageRanges;
-import java.awt.print.PrinterException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -191,7 +188,6 @@ public class QQUpdater {
     }
 
     private void fillCoverages(HashMap<Integer, Double> coverages, List<WebElement> inputs) {
-        /* TODO fill Coverages based on coverage name */
         for(WebElement currentInput : inputs) {
             try {
                 WebElement selector = currentInput.findElement(By.name("CoverageID"));
