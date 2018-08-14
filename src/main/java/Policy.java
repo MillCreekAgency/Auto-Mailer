@@ -10,6 +10,7 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.rtf.RTFEditorKit;
 // Java IO
 import java.io.*;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,9 +22,9 @@ import java.util.HashMap;
 
 public abstract class Policy {
     // Constants
-    public static final String WORK_FOLDER = System.getProperty("user.home") + "policies/send-out/";
+    public static final String WORK_FOLDER = System.getProperty("user.home") + "/policies/send-out/";
     public static final String RENEWAL_LETTER = "RenewalLetter.rtf";
-    public static final String PRINT_FOLDER = System.getProperty("user.home") + "print/";
+    public static final String PRINT_FOLDER = System.getProperty("user.home") + "/print/";
 
     // Policy info
     public String name;
@@ -77,9 +78,7 @@ public abstract class Policy {
     public void makeLetter(){
         try {
             // Create policyFile input Stream
-            Path currentRelativePath = Paths.get("");
-            String s = currentRelativePath.toAbsolutePath().toString();
-            File letterTemplate = new File(currentRelativePath.toAbsolutePath().toString()  + "/" + Policy.RENEWAL_LETTER);
+            File letterTemplate = new File("./RenewalLetter.rtf");
             InputStream targetStream = new FileInputStream(letterTemplate);
             // Create RTFEditorKit
             RTFEditorKit rtfeditor = new RTFEditorKit();
@@ -106,12 +105,15 @@ public abstract class Policy {
             letter = letter.replaceAll("NUMBER_OF_POLICY", policyNumber);
             // Write to policyFile
             rtfLetter.replace(0, rtfLetter.getLength(), letter, null);
-            OutputStream outputStream = new FileOutputStream(Policy.WORK_FOLDER + policyNumber + ".rtf");
+            String fileLocation = Policy.WORK_FOLDER + policyNumber + ".rtf";
+            OutputStream outputStream = new FileOutputStream(fileLocation);
             rtfeditor.write(outputStream, rtfLetter, 0, rtfLetter.getLength());
+            Printer.printFile(new File(fileLocation));
 
         } catch (Exception ex) {
             System.out.println("Failed to read letter");
             System.out.println(ex.getClass());
+            System.out.println(ex.getMessage());
             return;
         }
     }

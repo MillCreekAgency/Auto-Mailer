@@ -342,7 +342,7 @@ public class ApplicationWindow extends Application {
         this.addToGrid(grid, emailButton, 0, 4);
         this.addToGrid(grid, letterButton, 2, 4);
 
-        Scene dialogScene = new Scene(grid, 400, 300);
+        Scene dialogScene = new Scene(grid, 500, 300);
         dialog.setScene(dialogScene);
         dialog.show();
     }
