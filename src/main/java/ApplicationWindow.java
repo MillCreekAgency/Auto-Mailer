@@ -50,12 +50,7 @@ public class ApplicationWindow extends Application {
 
 
     public static void main(String[] args) {
-        //launch(args);
-        Letter l = new Letter("CCH012171-04", "Bryce", "1 Oakway Drive");
-        //l.makeLetter("Bryce Thuilot", "1 Oakway Drive\n Stony Brook, NY 11790");
-        //l.printLetter();
-        l.createLetter();
-
+        launch(args);
     }
 
     public void login(String username, String password) {

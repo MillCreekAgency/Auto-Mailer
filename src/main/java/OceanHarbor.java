@@ -29,8 +29,8 @@ public class OceanHarbor extends Policy {
         PDDocument doc = PDDocument.load(this.policyFile);
 
         Splitter splitter = new Splitter();
-        splitter.setStartPage(1);
-        splitter.setEndPage(4);
+        splitter.setStartPage(2);
+        splitter.setEndPage(3);
         List<PDDocument> pages = splitter.split(doc);
 
         PDFMergerUtility merger = new PDFMergerUtility();
@@ -40,58 +40,12 @@ public class OceanHarbor extends Policy {
              merger.appendDocument(mortgagePDF, page);
         }
 
-        mortgagePDF.save(PRINT_FOLDER + this.policyNumber +"_Mortgage.pdf");
-
-    }
-
-    @Override
-    public void getInfoFromPolicy() throws IOException {
-        String pdfText = getPDFText(this.policyFile);
-        String nameAndAddress = pdfText.substring(pdfText.indexOf("Insured\n") + 8);
-        nameAndAddress = nameAndAddress.substring(0, nameAndAddress.indexOf("OCEAN HARBOR CASUALTY"));
-
-        String[] nameAndAddressArr = nameAndAddress.split("\n", 2);
-        this.name = nameAndAddressArr[0];
-        this.address = nameAndAddressArr[1];
-        this.dwelling = this.isDwelling(pdfText);
-
-        this.policyNumber = pdfText.substring(pdfText.indexOf("POLICY NUMBER") - 13,pdfText.indexOf("POLICY NUMBER") - 1);
-
-        this.coverages = this.dwelling ? this.findDwellingCoverages(pdfText) : this.findHOCoverages(pdfText);
-
-        this.premium = Double.parseDouble(cutSection(pdfText, "Total Policy Premium: ", 8));
-
-        this.deductible = Integer.parseInt(this.cutSection(pdfText, "otherwise\n", 6));
-
-        String hurricaneDed = this.cutSection(pdfText, "Ded.: ", 2);
-        try {
-            this.hurricaneDeductible = Integer.parseInt(hurricaneDed.replace("%", ""));
-        } catch(NumberFormatException ex) {
-            this.hurricaneDeductible = 0;
-        }
-
-
-        int dateStartIndex = pdfText.indexOf("FROM TO");
-        String[] dates = pdfText.substring(dateStartIndex + 9, pdfText.indexOf("\n", dateStartIndex + 9)).split(" ");
-        this.effectiveDate = dates[0];
-        this.expirationDate = dates[0];
-
+        Printer.printFile(mortgagePDF);
 
     }
 
     private boolean isDwelling(String pdfText) {
         return pdfText.contains("DWELLING PROPERTY POLICY");
-    }
-
-    @Override
-    public String printCoverages() {
-        StringBuilder coverages = new StringBuilder();
-        int i = 65;
-        for(Integer cssValue : this.coverages.keySet()) {
-            coverages.append("Coverage " + (char) (i) + ": $" + this.coverages.get(cssValue) + "\n");
-            i++;
-        }
-        return coverages.toString();
     }
 
     public HashMap<Integer, Double> findDwellingCoverages(String policy) {
@@ -116,5 +70,67 @@ public class OceanHarbor extends Policy {
         coverages.put(732, Double.parseDouble(this.cutSection(policy, "Personal Liability", 8)));
         coverages.put(602, Double.parseDouble(this.cutSection(policy, "Medical Payments to Others", 7)));
         return coverages;
+    }
+
+    @Override
+    protected void setName(String pdfText) {
+        String nameAndAddress = pdfText.substring(pdfText.indexOf("Insured\n") + 8);
+        nameAndAddress = nameAndAddress.substring(0, nameAndAddress.indexOf("OCEAN HARBOR CASUALTY"));
+
+        this.name = nameAndAddress.substring(0, nameAndAddress.indexOf("\n"));
+    }
+
+    @Override
+    protected void setAddress(String pdfText) {
+        String nameAndAddress = pdfText.substring(pdfText.indexOf("Insured\n") + 8);
+        nameAndAddress = nameAndAddress.substring(0, nameAndAddress.indexOf("OCEAN HARBOR CASUALTY"));
+
+        this.address = nameAndAddress.substring(nameAndAddress.indexOf("\n"));
+    }
+
+    @Override
+    protected void setPolicyNumber(String pdfText) {
+        this.policyNumber = pdfText.substring(pdfText.indexOf("POLICY NUMBER") - 13,pdfText.indexOf("POLICY NUMBER") - 1);
+    }
+
+    @Override
+    protected void setCoverages(String pdfText) {
+        this.coverages = this.dwelling ? this.findDwellingCoverages(pdfText) : this.findHOCoverages(pdfText);
+    }
+
+    @Override
+    protected void setDates(String pdfText) {
+        int dateStartIndex = pdfText.indexOf("FROM TO");
+        String[] dates = pdfText.substring(dateStartIndex + 9, pdfText.indexOf("\n", dateStartIndex + 9)).split(" ");
+        this.effectiveDate = dates[0];
+        this.expirationDate = dates[0];
+
+    }
+
+    @Override
+    protected void setRenewal(String pdfText) {
+
+    }
+
+    @Override
+    protected void setPremium(String pdfText) {
+        this.premium = Double.parseDouble(cutSection(pdfText, "Total Policy Premium: ", 8));
+    }
+
+    @Override
+    protected void setDeductibles(String pdfText) {
+        this.deductible = Integer.parseInt(this.cutSection(pdfText, "otherwise\n", 6));
+
+        String hurricaneDed = this.cutSection(pdfText, "Ded.: ", 2);
+        try {
+            this.hurricaneDeductible = Integer.parseInt(hurricaneDed.replace("%", ""));
+        } catch(NumberFormatException ex) {
+            this.hurricaneDeductible = 0;
+        }
+    }
+
+    @Override
+    protected void setDwelling(String pdfText) {
+        this.dwelling = this.isDwelling(pdfText);
     }
 }

@@ -15,17 +15,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 // Date formating
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 // User input
 import java.util.HashMap;
 
 public abstract class Policy {
-    // Constants
-    public static final String WORK_FOLDER = System.getProperty("user.home") + "/policies/send-out/";
-    public static final String RENEWAL_LETTER = "RenewalLetter.rtf";
-    public static final String PRINT_FOLDER = System.getProperty("user.home") + "/print/";
-
     // Policy info
     public String name;
     public String policyNumber;
@@ -40,8 +36,10 @@ public abstract class Policy {
     protected String company;
     protected boolean dwelling;
 
+    // Save policy file
     protected File policyFile;
 
+    // Application window for GUI
     private ApplicationWindow applicationWindow;
 
     // Settings for renewal
@@ -73,20 +71,62 @@ public abstract class Policy {
         return pdfText;
     }
 
-    public abstract void getInfoFromPolicy() throws IOException;
 
+    // Sets for policy info
+    protected abstract void setName(String pdfText);
+    protected abstract void setAddress(String pdfText);
+    protected abstract void setPolicyNumber(String pdfText);
+    protected abstract void setDates(String pdfText);
+    protected abstract void setRenewal(String pdfText);
+    protected abstract void setPremium(String pdfText);
+    protected abstract void setDeductibles(String pdfText);
+    protected abstract void setDwelling(String pdfText);
+    protected abstract void setCoverages(String pdfText);
 
+    public void getInfoFromPolicy(String pdfText) {
+        // Get Insured Name
+        this.setName(pdfText);
+
+        // Get insured Address
+        this.setAddress(pdfText);
+
+        // Get Policy Number
+        this.setPolicyNumber(pdfText);
+
+        // Get Effective and Expiration Dates
+        this.setDates(pdfText);
+
+        // Sets coverages of policy
+        this.setCoverages(pdfText);
+
+        // Gets whether is renewal or now
+        this.setRenewal(pdfText);
+
+        // Gets Premium
+        this.setPremium(pdfText);
+
+        // Get deductible and hurricane deductible
+        this.setDeductibles(pdfText);
+
+        // Sets if dwelling policy or not
+        this.setDwelling(pdfText);
+
+    }
 
     public abstract String getOldPolicyNum(String currentPolicyNum);
+
 
     public void updatePolicy() {
         // Gets insured info from policy
         try {
-            this.getInfoFromPolicy();
-        } catch(IOException ioEx) {
-            System.out.println("Unable to open PDF");
+            String pdfText = getPDFText(this.policyFile);
+            this.getInfoFromPolicy(pdfText);
+        } catch (IOException io) {
+            System.out.println("Was unable to open pdf");
             return;
         }
+
+
         QQUpdater updater = new QQUpdater(applicationWindow.getUsername(), applicationWindow.getPassword());
 
         String email = updater.getEmail(this.getOldPolicyNum(this.policyNumber));
@@ -100,8 +140,6 @@ public abstract class Policy {
            applicationWindow.sendToInsured(email, this, applicationWindow);
         }
 
-
-        this.displayInfo();
         try {
             if(printMortgagee) {
                 this.printMortgagee();
@@ -109,38 +147,15 @@ public abstract class Policy {
         }catch (IOException ex) {
             System.out.println("Could not print PDF");
         }
-
-        try {
-            Files.move(Paths.get(policyFile.getAbsolutePath()), Paths.get(WORK_FOLDER + this.policyNumber + ".pdf"));
-        } catch (Exception ex) {
-            System.out.println("Unable to move policyFile");
-        }
     }
 
     public void sendLetter() {
         Letter letter = new Letter(this.policyNumber, this.name, this.address);
-        letter.makeLetter();
+        letter.createLetter();
         letter.printLetter();
     }
 
     public abstract void printMortgagee() throws  IOException;
-
-    public abstract String printCoverages();
-
-    public void displayInfo() {
-        // TODO display Info on application
-        System.out.println(String.join(
-                System.getProperty("line.separator"),
-                "Insured Name: " + this.name,
-                "Address: " + this.address,
-                "Policy Number: " + this.policyNumber,
-                "Coverages: \n" + this.printCoverages(),
-                "Premium: " + this.premium,
-                "Deductible: " + this.deductible,
-                "Hurricane Deductible: " + this.hurricaneDeductible
-                )
-        );
-    }
 
     public void getEmailInfo(String to, ApplicationWindow applicationWindow) {
         applicationWindow.changeEmail(to, this);
@@ -158,6 +173,14 @@ public abstract class Policy {
         email.sendEmail(to, subject, body, this.policyFile.getAbsolutePath(), this.policyNumber + ".pdf");
     }
 
+
+    /**
+     *  Cuts str from the index of start + length,
+     * @param str The string to cut from
+     * @param start The string to look for in str
+     * @param length the length to cut from `start`'s index
+     * @return The resulting cut, after being trimmed of any Dollar signs and commas
+     */
     public String cutSection(String str, String start, int length) {
         int index = str.indexOf(start);
         if (index == -1) {
