@@ -12,6 +12,7 @@ public class Printer {
     public static void printFile(File file) {
         try {
             try {
+                System.out.println(file.getAbsolutePath());
                 PDDocument document = PDDocument.load(file);
                 printFile(document);
             }catch (org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException passwordEx) {

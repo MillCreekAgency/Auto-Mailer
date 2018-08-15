@@ -75,48 +75,7 @@ public abstract class Policy {
 
     public abstract void getInfoFromPolicy() throws IOException;
 
-    public void makeLetter(){
-        try {
-            // Create policyFile input Stream
-            File letterTemplate = new File("./RenewalLetter.rtf");
-            InputStream targetStream = new FileInputStream(letterTemplate);
-            // Create RTFEditorKit
-            RTFEditorKit rtfeditor = new RTFEditorKit();
-            // Create empty document
-            DefaultStyledDocument rtfLetter = new DefaultStyledDocument();
-            // Have editor read from Stream
-            rtfeditor.read(targetStream, rtfLetter, 0);
-            //  get text from Editor
-            String letter = rtfLetter.getText(0, rtfLetter.getLength());
 
-
-
-            Date date = new Date();
-            SimpleDateFormat df = new SimpleDateFormat("E MMM d, yyyy");
-            // Set date
-            letter = letter.replaceAll("DATE", df.format(date));
-            // Set First name
-            letter = letter.replaceAll("FIRST_NAME", name.split(" ")[0]);
-            // Set Name
-            letter = letter.replaceAll("FULL_NAME", name);
-            // Set Address
-            letter = letter.replaceAll("ADDRESS", address);
-            // Set Policy Number
-            letter = letter.replaceAll("NUMBER_OF_POLICY", policyNumber);
-            // Write to policyFile
-            rtfLetter.replace(0, rtfLetter.getLength(), letter, null);
-            String fileLocation = Policy.WORK_FOLDER + policyNumber + ".rtf";
-            OutputStream outputStream = new FileOutputStream(fileLocation);
-            rtfeditor.write(outputStream, rtfLetter, 0, rtfLetter.getLength());
-            Printer.printFile(new File(fileLocation));
-
-        } catch (Exception ex) {
-            System.out.println("Failed to read letter");
-            System.out.println(ex.getClass());
-            System.out.println(ex.getMessage());
-            return;
-        }
-    }
 
     public abstract String getOldPolicyNum(String currentPolicyNum);
 
@@ -156,6 +115,12 @@ public abstract class Policy {
         } catch (Exception ex) {
             System.out.println("Unable to move policyFile");
         }
+    }
+
+    public void sendLetter() {
+        Letter letter = new Letter(this.policyNumber, this.name, this.address);
+        letter.makeLetter();
+        letter.printLetter();
     }
 
     public abstract void printMortgagee() throws  IOException;

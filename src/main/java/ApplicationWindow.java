@@ -18,7 +18,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.File;
+import java.util.PrimitiveIterator;
 
 public class ApplicationWindow extends Application {
 
@@ -46,9 +50,12 @@ public class ApplicationWindow extends Application {
 
 
     public static void main(String[] args) {
-        //OceanHarbor oc = new OceanHarbor("/Users/bryce/policies/", false, false);
-        launch(args);
-        //System.out.println(javafx.scene.text.Font.getFamilies().toString());
+        //launch(args);
+        Letter l = new Letter("CCH012171-04", "Bryce", "1 Oakway Drive");
+        //l.makeLetter("Bryce Thuilot", "1 Oakway Drive\n Stony Brook, NY 11790");
+        //l.printLetter();
+        l.createLetter();
+
     }
 
     public void login(String username, String password) {
@@ -335,7 +342,7 @@ public class ApplicationWindow extends Application {
             @Override
             public void handle(ActionEvent event) {
                 dialog.close();
-                policy.makeLetter();
+                policy.sendLetter();
             }
         });
 
