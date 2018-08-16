@@ -28,8 +28,8 @@ public class OceanHarbor extends Policy {
         PDDocument doc = PDDocument.load(this.policyFile);
 
         Splitter splitter = new Splitter();
-        splitter.setStartPage(2);
-        splitter.setEndPage(3);
+        splitter.setStartPage(3);
+        splitter.setEndPage(4);
         List<PDDocument> pages = splitter.split(doc);
 
         PDFMergerUtility merger = new PDFMergerUtility();
@@ -39,7 +39,7 @@ public class OceanHarbor extends Policy {
              merger.appendDocument(mortgagePDF, page);
         }
 
-        Printer.printFile(mortgagePDF);
+        Printer.printFile(mortgagePDF, "File for Mortgagee");
 
     }
 
@@ -48,8 +48,8 @@ public class OceanHarbor extends Policy {
         PDDocument doc = PDDocument.load(this.policyFile);
 
         Splitter splitter = new Splitter();
-        splitter.setStartPage(1);
-        splitter.setEndPage(3);
+        splitter.setStartPage(2);
+        splitter.setEndPage(4);
         List<PDDocument> pages = splitter.split(doc);
 
         PDFMergerUtility merger = new PDFMergerUtility();

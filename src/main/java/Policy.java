@@ -112,14 +112,18 @@ public abstract class Policy {
             String pdfText = getPDFText(this.policyFile);
             this.getInfoFromPolicy(pdfText);
         } catch (IOException io) {
-            System.out.println("Was unable to open pdf");
+            applicationWindow.errorPopup("Unable to read PDF");
             return;
         }
 
 
-        QQUpdater updater = new QQUpdater(applicationWindow.getUsername(), applicationWindow.getPassword());
 
-        String email = updater.getEmail(this.getOldPolicyNum(this.policyNumber));
+        QQUpdater updater = new QQUpdater(applicationWindow.getUsername(), applicationWindow.getPassword());;
+        String email = null;
+        if(mailToInsured || updateInQQ) {
+            email = updater.getEmail(this.getOldPolicyNum(this.policyNumber));
+        }
+
 
         //Create scanner
         if(updateInQQ) {
@@ -132,24 +136,29 @@ public abstract class Policy {
            applicationWindow.sendToInsured(email, this, applicationWindow);
         }
 
-        /*try {
-            if(printMortgagee) {
+        if(this.printMortgagee) {
+            try {
                 this.printMortgagee();
+            } catch (IOException ex) {
+                applicationWindow.errorPopup("Unable to print PDF for mortgage");
             }
-        }catch (IOException ex) {
-            System.out.println("Could not print PDF");
-        }*/
+        }
     }
 
     public void sendLetter() {
         Letter letter = new Letter(this.policyNumber, this.name, this.address);
-        letter.createLetter();
+        try {
+            letter.createLetter();
+        } catch (IOException io) {
+            applicationWindow.errorPopup("Unable to create letter for Insured");
+        }
 
         try {
-            letter.addPolicyPages(this.getLetterPages(this.policyFile));
+            letter.addPolicy(this.getLetterPages(this.policyFile));
         }catch (IOException io) {
-            System.out.println("Unable to add policy pages to letter");
+            applicationWindow.errorPopup("Unable to read PDF (Maybe its location changed?");
         }
+        System.out.println("Running");
         letter.printLetter();
     }
 

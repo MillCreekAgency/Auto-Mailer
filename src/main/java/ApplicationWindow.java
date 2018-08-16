@@ -19,6 +19,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ApplicationWindow extends Application {
 
@@ -100,6 +101,8 @@ public class ApplicationWindow extends Application {
         this.setOptionMenu();
         this.updateButton(this);
     }
+
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -197,7 +200,7 @@ public class ApplicationWindow extends Application {
         });
         grid.add(ok, 1, 5);
         GridPane.setHalignment(ok, HPos.CENTER);
-        Scene dialogScene = new Scene(grid, 400, 300);
+        Scene dialogScene = new Scene(grid, 550, 300);
         dialog.setScene(dialogScene);
         dialog.show();
     }
@@ -286,8 +289,9 @@ public class ApplicationWindow extends Application {
 
     }
 
-    private void pleaseSelectPolicyPopup() {
+    public void errorPopup(String desc) {
         final Stage dialog = new Stage();
+        dialog.setTitle("ERROR");
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(primaryStage);
         GridPane grid = new GridPane();
@@ -297,7 +301,9 @@ public class ApplicationWindow extends Application {
         dialog.show();
 
         grid.add(this.createText("ERROR", 20, FontWeight.BOLD), 0, 0);
-        grid.add(this.createText("Please select a policy to update", 12, FontWeight.NORMAL), 0, 1);
+        grid.add(this.createText(desc, 12, FontWeight.NORMAL), 0, 1);
+
+
         Button ok = new Button("OK");
         ok.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -319,6 +325,14 @@ public class ApplicationWindow extends Application {
         // Letter option
         this.addToGrid(grid, this.createText("Or send a physical Letter", 20, FontWeight.NORMAL), 1, 2);
 
+        Text emailFound;
+        if (email == null) {
+            emailFound = this.createText("No email found on QQ", 12, FontWeight.NORMAL);
+        }else {
+            emailFound = this.createText("Email found on QQ: " + email, 12, FontWeight.NORMAL);
+        }
+        this.addToGrid(grid, emailFound, 1, 4);
+
         Button emailButton = new Button("Email");
         emailButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -337,8 +351,8 @@ public class ApplicationWindow extends Application {
             }
         });
 
-        this.addToGrid(grid, emailButton, 0, 4);
-        this.addToGrid(grid, letterButton, 2, 4);
+        this.addToGrid(grid, emailButton, 0, 6);
+        this.addToGrid(grid, letterButton, 2, 6);
 
         Scene dialogScene = new Scene(grid, 500, 300);
         dialog.setScene(dialogScene);
@@ -357,7 +371,7 @@ public class ApplicationWindow extends Application {
             @Override
             public void handle(ActionEvent event) {
                 if(policyFile == null) {
-                   pleaseSelectPolicyPopup();
+                   errorPopup("Error");
                 }else {
                     OceanHarbor oc = new OceanHarbor(policyFile, updateInQQ.isSelected(), printForMortgage.isSelected(), sendToInsured.isSelected(), application);
                 }
