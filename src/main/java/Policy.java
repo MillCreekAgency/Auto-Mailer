@@ -5,19 +5,8 @@ import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-// Import RTFEditorSuite
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.rtf.RTFEditorKit;
 // Java IO
 import java.io.*;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-// Date formating
-import java.sql.SQLOutput;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 // User input
 import java.util.HashMap;
 
@@ -71,6 +60,7 @@ public abstract class Policy {
         return pdfText;
     }
 
+    public abstract PDDocument getLetterPages(File policy) throws IOException;
 
     // Sets for policy info
     protected abstract void setName(String pdfText);
@@ -135,23 +125,31 @@ public abstract class Policy {
         if(updateInQQ) {
             updater.updatePolicy(this.policyNumber, this.premium, this.coverages, new int[]{this.deductible, this.hurricaneDeductible}, this.dwelling);
         }
+
+        updater.close();
         // Check if email was received
         if(mailToInsured) {
            applicationWindow.sendToInsured(email, this, applicationWindow);
         }
 
-        try {
+        /*try {
             if(printMortgagee) {
                 this.printMortgagee();
             }
         }catch (IOException ex) {
             System.out.println("Could not print PDF");
-        }
+        }*/
     }
 
     public void sendLetter() {
         Letter letter = new Letter(this.policyNumber, this.name, this.address);
         letter.createLetter();
+
+        try {
+            letter.addPolicyPages(this.getLetterPages(this.policyFile));
+        }catch (IOException io) {
+            System.out.println("Unable to add policy pages to letter");
+        }
         letter.printLetter();
     }
 
@@ -174,13 +172,6 @@ public abstract class Policy {
     }
 
 
-    /**
-     *  Cuts str from the index of start + length,
-     * @param str The string to cut from
-     * @param start The string to look for in str
-     * @param length the length to cut from `start`'s index
-     * @return The resulting cut, after being trimmed of any Dollar signs and commas
-     */
     public String cutSection(String str, String start, int length) {
         int index = str.indexOf(start);
         if (index == -1) {

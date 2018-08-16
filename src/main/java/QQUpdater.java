@@ -1,16 +1,10 @@
 // Selenium Imports
-import javafx.print.PrinterJob;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.printing.PDFPageable;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 // Util imports
-/// Print
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,6 +19,11 @@ public class QQUpdater {
         driver = new ChromeDriver();
         driver.navigate().to("https://app.qqcatalyst.com/Contacts/Search");
         this.login();
+    }
+
+    public void close(){
+        driver.close();
+        driver.quit();
     }
 
     public String getEmail(String oldPolicyNum){
@@ -184,7 +183,6 @@ public class QQUpdater {
         }
         returnToPolicy.click();
         this.sleep(1);
-        driver.close();
     }
 
     private void fillCoverages(HashMap<Integer, Double> coverages, List<WebElement> inputs) {

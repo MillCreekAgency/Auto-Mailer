@@ -5,7 +5,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class OceanHarbor extends Policy {
@@ -42,6 +41,25 @@ public class OceanHarbor extends Policy {
 
         Printer.printFile(mortgagePDF);
 
+    }
+
+    @Override
+    public PDDocument getLetterPages(File policy) throws IOException{
+        PDDocument doc = PDDocument.load(this.policyFile);
+
+        Splitter splitter = new Splitter();
+        splitter.setStartPage(1);
+        splitter.setEndPage(3);
+        List<PDDocument> pages = splitter.split(doc);
+
+        PDFMergerUtility merger = new PDFMergerUtility();
+
+        PDDocument letterPDF = new PDDocument();
+        for(PDDocument page : pages) {
+            merger.appendDocument(letterPDF, page);
+        }
+
+        return letterPDF;
     }
 
     private boolean isDwelling(String pdfText) {

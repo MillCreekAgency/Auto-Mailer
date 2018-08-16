@@ -2,13 +2,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.rtf.RTFEditorKit;
-import java.awt.*;
-import java.awt.print.PrinterException;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -88,7 +83,11 @@ public class Letter {
             contentStream.newLineAtOffset(0, -50);
             contentStream.showText(this.name);
             this.newLine(contentStream, 1);
-            contentStream.showText(this.address);
+            String[] addressLines = this.address.split("\n");
+            for(String addressLine : addressLines) {
+                contentStream.showText(addressLine);
+                contentStream.newLine();
+            }
 
             //Company and Policy Number
             contentStream.newLineAtOffset(0,-50);
