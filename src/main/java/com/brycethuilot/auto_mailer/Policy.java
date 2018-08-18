@@ -215,18 +215,30 @@ public abstract class Policy {
         email.sendEmail(to, subject, body, this.policyFile.getAbsolutePath(), this.policyNumber + ".pdf");
     }
 
+    public double getDoubleValue(String string) {
+        return Double.parseDouble(trimMoneyValues(string));
+    }
+
+    public int getIntValue(String string) {
+        return Integer.parseInt(trimMoneyValues(string));
+    }
+
 
     public String cutSection(String str, String start, int length) {
         int index = str.indexOf(start);
         if (index == -1) {
-            return "0";
+            return "";
         } else {
             StringBuilder string = new StringBuilder(str.substring(index + start.length(), index + start.length() + length).trim());
-           return this.trimMoneyValues(string);
+            return string.toString();
         }
     }
 
-    private String trimMoneyValues(StringBuilder string) {
+    public String trimMoneyValues(String str) {
+        if(str.equals("")) {
+            return "0";
+        }
+        StringBuilder string  = new StringBuilder(str);
         int indexOfComma = string.indexOf(",");
         int indexOfDollarSign = string.indexOf("$");
         if (indexOfComma != -1) {
@@ -239,13 +251,13 @@ public abstract class Policy {
     }
 
     public String cutToFrom(String str, String from, String to) {
-        int fromIndex = str.indexOf(from) + from.length();
-        int toIndex = str.indexOf(to, fromIndex);
+        int fromIndex = str.indexOf(from);
+        int toIndex = str.indexOf(to, fromIndex + from.length());
         if (fromIndex == -1 || toIndex == -1) {
-            return "0";
+            return "";
         } else {
-            StringBuilder string = new StringBuilder(str.substring(fromIndex, toIndex).trim());
-            return this.trimMoneyValues(string);
+            StringBuilder string = new StringBuilder(str.substring(fromIndex + from.length(), toIndex).trim());
+            return string.toString();
         }
 
     }

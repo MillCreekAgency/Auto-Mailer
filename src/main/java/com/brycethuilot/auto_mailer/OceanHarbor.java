@@ -70,25 +70,25 @@ public class OceanHarbor extends Policy {
 
     public HashMap<Integer, Double> findDwellingCoverages(String policy) {
         HashMap<Integer, Double> coverages = new HashMap<Integer, Double>();
-        coverages.put(315, Double.parseDouble(this.cutToFrom(policy, "Dwelling $", "Fire")));
-        coverages.put(683, Double.parseDouble(this.cutToFrom(policy, "Other Structure", "  ")));
-        coverages.put(753, Double.parseDouble(this.cutToFrom(policy, "Personal Property","  " )));
-        coverages.put(576 , Double.parseDouble(this.cutToFrom(policy, "Fair Rental Value", "\n")));
-        coverages.put(576,  coverages.get(576) + Double.parseDouble(this.cutToFrom(policy, "Additional Living Expense", "\n")));
-        coverages.put(732, Double.parseDouble(this.cutToFrom(policy, "Personal Liability", "\n")));
-        coverages.put(602, Double.parseDouble(this.cutToFrom(policy, "Medical Payments to Others", "\n")));
+        coverages.put(315, this.getDoubleValue(this.cutToFrom(policy, "Dwelling $", "Fire")));
+        coverages.put(683, this.getDoubleValue(this.cutToFrom(policy, "Other Structure", "  ")));
+        coverages.put(753, this.getDoubleValue(this.cutToFrom(policy, "Personal Property","  " )));
+        coverages.put(576 , this.getDoubleValue(this.cutToFrom(policy, "Fair Rental Value", "\n")));
+        coverages.put(576,  coverages.get(576) + this.getDoubleValue(this.cutToFrom(policy, "Additional Living Expense", "\n")));
+        coverages.put(732, this.getDoubleValue(this.cutToFrom(policy, "Personal Liability", "\n")));
+        coverages.put(602, this.getDoubleValue(this.cutToFrom(policy, "Medical Payments to Others", "\n")));
         //coverages.put(728, Double.parseDouble(this.cutToFrom(policy, "Personal Injury",  "\n")));
         return coverages;
     }
 
     public HashMap<Integer, Double> findHOCoverages(String policy) {
         HashMap<Integer, Double> coverages = new HashMap<>();
-        coverages.put(315, Double.parseDouble(this.cutSection(policy, "Building", 12)));
-        coverages.put(683, Double.parseDouble(this.cutSection(policy, "Other Structure", 10)));
-        coverages.put(753, Double.parseDouble(this.cutSection(policy, "Personal Property", 11)));
-        coverages.put(576, Double.parseDouble(this.cutSection(policy, "Loss of Use", 11)));
-        coverages.put(732, Double.parseDouble(this.cutSection(policy, "Personal Liability", 8)));
-        coverages.put(602, Double.parseDouble(this.cutSection(policy, "Medical Payments to Others", 7)));
+        coverages.put(315, this.getDoubleValue(this.cutSection(policy, "Building", 12)));
+        coverages.put(683, this.getDoubleValue(this.cutSection(policy, "Other Structure", 10)));
+        coverages.put(753, this.getDoubleValue(this.cutSection(policy, "Personal Property", 11)));
+        coverages.put(576, this.getDoubleValue(this.cutSection(policy, "Loss of Use", 11)));
+        coverages.put(732, this.getDoubleValue(this.cutSection(policy, "Personal Liability", 8)));
+        coverages.put(602, this.getDoubleValue(this.cutSection(policy, "Medical Payments to Others", 7)));
         return coverages;
     }
 
@@ -134,16 +134,16 @@ public class OceanHarbor extends Policy {
 
     @Override
     protected void setPremium(String pdfText) {
-        this.premium = Double.parseDouble(cutSection(pdfText, "Total com.brycethuilot.auto_mailer.Policy Premium: ", 8));
+        this.premium = this.getDoubleValue(cutSection(pdfText, "Total Policy Premium: ", 8));
     }
 
     @Override
     protected void setDeductibles(String pdfText) {
-        this.deductible = Integer.parseInt(this.cutSection(pdfText, "otherwise\n", 6));
+        this.deductible = this.getIntValue(this.cutSection(pdfText, "otherwise\n", 6));
 
         String hurricaneDed = this.cutSection(pdfText, "Ded.: ", 2);
         try {
-            this.hurricaneDeductible = Integer.parseInt(hurricaneDed.replace("%", ""));
+            this.hurricaneDeductible = this.getIntValue(hurricaneDed.replace("%", ""));
         } catch(NumberFormatException ex) {
             this.hurricaneDeductible = 0;
         }

@@ -111,7 +111,7 @@ public class Letter {
 
     private void addAddress(PDPageContentStream contentStream) throws IOException {
         // Address
-        this.newLine(contentStream, 1);
+        contentStream.newLine();
         String[] addressLines = this.address.split("\n");
         for(String addressLine : addressLines) {
             contentStream.showText(addressLine);
@@ -121,7 +121,7 @@ public class Letter {
 
     private void addDate(PDPageContentStream contentStream) throws IOException{
         // Date
-        contentStream.newLineAtOffset(75, 595);
+        contentStream.newLineAtOffset(75, 580);
         contentStream.showText(this.dateString);
     }
 

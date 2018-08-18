@@ -19,14 +19,13 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.xerces.dom.RangeImpl;
 
 import java.io.File;
 
 public class ApplicationWindow extends Application {
 
     private File policyFile;
-    private RadioButton oceanHarbor;
-    private ToggleGroup companies;
     private GridPane root;
     private Button fileSelect;
     private Text filePath;
@@ -36,6 +35,8 @@ public class ApplicationWindow extends Application {
     private CheckBox sendToInsured;
     private CheckBox printForMortgage;
     private Stage primaryStage;
+    private RadioButton oceanHarbor;
+    private RadioButton nBay;
 
     private String password;
     private String username = "dean@millcreekagency.com";
@@ -141,17 +142,18 @@ public class ApplicationWindow extends Application {
     }
 
     public void createCompanySelector(GridPane root) {
-        companies = new ToggleGroup();
+        ToggleGroup companies = new ToggleGroup();
 
         oceanHarbor = new RadioButton("Ocean Harbor");
         oceanHarbor.setToggleGroup(companies);
         oceanHarbor.setSelected(true);
 
-        Text companyTitle = new Text("Select Company");
-        root.add(companyTitle, 1, COMPANY_SELECT - 1);
-        GridPane.setHalignment(companyTitle, HPos.CENTER);
-        root.add(oceanHarbor, 0, COMPANY_SELECT);
-        GridPane.setHalignment(oceanHarbor, HPos.CENTER);
+        nBay = new RadioButton("Narragansett Bay");
+        nBay.setToggleGroup(companies);
+
+        this.addToGrid(root, this.createText("Select Company", 16, FontWeight.NORMAL), 1, COMPANY_SELECT - 1);
+        this.addToGrid(root, oceanHarbor, 0, COMPANY_SELECT);
+        this.addToGrid(root, nBay, 2, COMPANY_SELECT);
 
     }
 
@@ -374,7 +376,11 @@ public class ApplicationWindow extends Application {
                 if(policyFile == null) {
                    errorPopup("Error");
                 }else {
-                    OceanHarbor oc = new OceanHarbor(policyFile, updateInQQ.isSelected(), printForMortgage.isSelected(), sendToInsured.isSelected(), application);
+                    if (oceanHarbor.isSelected()) {
+                        OceanHarbor oc = new OceanHarbor(policyFile, updateInQQ.isSelected(), printForMortgage.isSelected(), sendToInsured.isSelected(), application);
+                    } else if (nBay.isSelected()) {
+                        NarragansettBay nb = new NarragansettBay(policyFile, updateInQQ.isSelected(), application);
+                    }
                 }
             }
         });
