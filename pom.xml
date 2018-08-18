@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.brycethuilot.auto-mailer-gui</groupId>
-    <artifactId>Auto-Mailer-Gui</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <build>
+    <groupId>com.brycethuilot.auto_mailer</groupId>
+    <artifactId>Auto-Mailer</artifactId>
+    <version>1.0.0</version>
+   <build>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -15,6 +15,28 @@
                     <source>10</source>
                     <target>10</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                            <archive>
+                                <manifest>
+                                    <mainClass>com.brycethuilot.auto_mailer.ApplicationWindow</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

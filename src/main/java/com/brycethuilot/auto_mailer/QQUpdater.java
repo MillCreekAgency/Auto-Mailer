@@ -1,4 +1,4 @@
-// Selenium Imports
+package com.brycethuilot.auto_mailer;// Selenium Imports
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -63,7 +63,7 @@ public class QQUpdater {
         while (!renewalButton.isDisplayed()) {
             List<WebElement> labels = driver.findElements(By.className("Label"));
 
-           this.findButton(labels, "Policy Action");
+           this.findButton(labels, "com.brycethuilot.auto_mailer.Policy Action");
         }
 
         renewalButton.click();
@@ -75,7 +75,7 @@ public class QQUpdater {
         this.findButton(submitYes, "Yes");
 
         String currentUrl = driver.getCurrentUrl();
-        while(!currentUrl.contains("New=true&Mode=basic&extra=issue") && !currentUrl.contains("https://app.qqcatalyst.com/Policies/Policy/Details")) {
+        while(!currentUrl.contains("New=true&Mode=basic&extra=issue") && !currentUrl.contains("https://app.qqcatalyst.com/Policies/com.brycethuilot.auto_mailer.Policy/Details")) {
             this.sleep(2);
             currentUrl = driver.getCurrentUrl();
         }

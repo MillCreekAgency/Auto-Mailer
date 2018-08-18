@@ -1,4 +1,4 @@
-// Import PDF Tool Box
+package com.brycethuilot.auto_mailer;// Import PDF Tool Box
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.io.RandomAccessRead;
@@ -10,32 +10,67 @@ import java.io.*;
 // User input
 import java.util.HashMap;
 
+
 public abstract class Policy {
-    // Policy info
+
+    // com.brycethuilot.auto_mailer.Policy info
+
+    /**
+     * Stores the information about the policy
+     */
+    // Name of insured
     public String name;
+    // Name of company
+    public String company;
+    // policy number of policy
     public String policyNumber;
+    // Address of Insured (location being insured, not necessarily mailing address)
     protected String address;
+    // Effective date of policy
     protected String effectiveDate;
+    // Expiration date of policy
     protected String expirationDate;
+    // Coverages, Mapped by the option number in QQ
     protected HashMap<Integer, Double> coverages;
+    // Premium of policy
     protected double premium;
+    // Deductible of policy
     protected int deductible;
+    // Hurricane Deductible of policy
     protected int hurricaneDeductible;
+    // If the policy is a renew or not
     protected boolean renewal;
-    protected String company;
+    // If the the policy is dwelling, if not it is homeowners
     protected boolean dwelling;
+
 
     // Save policy file
     protected File policyFile;
 
-    // Application window for GUI
+
+    // Application window for GUI, used to call error windows
     private ApplicationWindow applicationWindow;
 
-    // Settings for renewal
+
+    /**
+     * Settings for renewal
+     */
+    // if the policy should be updated in QQ
     private boolean updateInQQ;
+    // if the policy should be printed for mortgagee
     private boolean printMortgagee;
+    // If the policy should be sent to the insured (either by email or letter)
     private boolean mailToInsured;
 
+    /**
+     * Policy class is a parent class of the other types of Policies @see com.brycethuilot.auto_mailer.OceanHarbor or @see com.brycethuilot.auto_mailer.NarragansetBay
+     *
+     * @param policyFile File object that points to the PDF to read in
+     * @param updateInQQ Whenether or not to update in QQ Catalyst using Selenium webdriver
+     * @param printMortgage
+     * @param mailToInsured
+     * @param applicationWindow
+     */
     public Policy(File policyFile, boolean updateInQQ, boolean printMortgage, boolean mailToInsured, ApplicationWindow applicationWindow) {
         this.policyFile = policyFile;
         this.updateInQQ = updateInQQ;
@@ -80,7 +115,7 @@ public abstract class Policy {
         // Get insured Address
         this.setAddress(pdfText);
 
-        // Get Policy Number
+        // Get com.brycethuilot.auto_mailer.Policy Number
         this.setPolicyNumber(pdfText);
 
         // Get Effective and Expiration Dates
@@ -173,7 +208,7 @@ public abstract class Policy {
         // Create email class
         Email email = new Email(password);
         // Get subject line
-        String subject = renewal ? "Insurance Renewal" : "Insurance Policy";
+        String subject = renewal ? "Insurance Renewal" : "Insurance com.brycethuilot.auto_mailer.Policy";
         // Get email body
         String body = email.emailBody(this.name, this.policyNumber, this.company, this.effectiveDate, this.expirationDate, this.renewal);
         // Send email

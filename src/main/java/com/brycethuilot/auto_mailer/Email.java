@@ -1,3 +1,5 @@
+package com.brycethuilot.auto_mailer;
+
 import java.util.Properties;
 
 import javax.mail.*;
@@ -57,7 +59,7 @@ public class Email {
             transport.connect(HOST, SMTP_USERNAME, stmpPassword);
 
             transport.sendMessage(message, message.getAllRecipients());
-            System.out.println("Email Sent");
+            System.out.println("com.brycethuilot.auto_mailer.Email Sent");
             transport.close();
 
         }
@@ -99,7 +101,7 @@ public class Email {
                 "<br>",
                 "<p>RE: Company: <strong> + " + company + "</strong></p>",
                 "<br>",
-                "<p>Policy Number: <strong>" + policyNumber + "</strong></p>",
+                "<p>com.brycethuilot.auto_mailer.Policy Number: <strong>" + policyNumber + "</strong></p>",
                 "<br>",
                 renewal ? this.formatRenewalEmail() : this.formatNewBusinessEmail(effectiveDate, expirationDate),
                 "<br><br>",

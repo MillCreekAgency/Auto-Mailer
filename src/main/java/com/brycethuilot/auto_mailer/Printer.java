@@ -1,3 +1,5 @@
+package com.brycethuilot.auto_mailer;
+
 import javafx.concurrent.Task;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
@@ -28,7 +30,7 @@ public class Printer {
             @Override
             public Boolean call() throws PrinterException {
 
-                //Load PDF & create a Printer Job
+                //Load PDF & create a com.brycethuilot.auto_mailer.Printer Job
                 PrinterJob job = PrinterJob.getPrinterJob();
                 job.setPageable(new PDFPageable(toPrint.get(0)));
                 if(!names.isEmpty()) {
@@ -62,7 +64,7 @@ public class Printer {
             @Override
             public Boolean call() throws PrinterException {
 
-                //Load PDF & create a Printer Job
+                //Load PDF & create a com.brycethuilot.auto_mailer.Printer Job
                 PrinterJob job = PrinterJob.getPrinterJob();
                 job.setPageable(new PDFPageable(document));
                 job.setJobName(name);

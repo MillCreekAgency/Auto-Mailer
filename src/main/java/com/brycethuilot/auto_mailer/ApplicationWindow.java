@@ -1,3 +1,5 @@
+package com.brycethuilot.auto_mailer;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,7 +21,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
 
 public class ApplicationWindow extends Application {
 
@@ -322,18 +323,18 @@ public class ApplicationWindow extends Application {
         grid.setAlignment(Pos.CENTER);
         // email Option
         this.addToGrid(grid, this.createText("Would you like to send an email", 20, FontWeight.NORMAL), 1, 0);
-        // Letter option
-        this.addToGrid(grid, this.createText("Or send a physical Letter", 20, FontWeight.NORMAL), 1, 2);
+        // com.brycethuilot.auto_mailer.Letter option
+        this.addToGrid(grid, this.createText("Or send a physical com.brycethuilot.auto_mailer.Letter", 20, FontWeight.NORMAL), 1, 2);
 
         Text emailFound;
         if (email == null) {
             emailFound = this.createText("No email found on QQ", 12, FontWeight.NORMAL);
         }else {
-            emailFound = this.createText("Email found on QQ: " + email, 12, FontWeight.NORMAL);
+            emailFound = this.createText("com.brycethuilot.auto_mailer.Email found on QQ: " + email, 12, FontWeight.NORMAL);
         }
         this.addToGrid(grid, emailFound, 1, 4);
 
-        Button emailButton = new Button("Email");
+        Button emailButton = new Button("com.brycethuilot.auto_mailer.Email");
         emailButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -342,7 +343,7 @@ public class ApplicationWindow extends Application {
             }
         });
 
-        Button letterButton = new Button("Letter");
+        Button letterButton = new Button("com.brycethuilot.auto_mailer.Letter");
         letterButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -366,7 +367,7 @@ public class ApplicationWindow extends Application {
 
 
     private void updateButton(ApplicationWindow application){
-        Button update = new Button("Update Policy");
+        Button update = new Button("Update com.brycethuilot.auto_mailer.Policy");
         update.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {

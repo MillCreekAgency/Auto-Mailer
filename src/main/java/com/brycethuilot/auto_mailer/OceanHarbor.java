@@ -1,3 +1,5 @@
+package com.brycethuilot.auto_mailer;
+
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -132,7 +134,7 @@ public class OceanHarbor extends Policy {
 
     @Override
     protected void setPremium(String pdfText) {
-        this.premium = Double.parseDouble(cutSection(pdfText, "Total Policy Premium: ", 8));
+        this.premium = Double.parseDouble(cutSection(pdfText, "Total com.brycethuilot.auto_mailer.Policy Premium: ", 8));
     }
 
     @Override

@@ -1,3 +1,5 @@
+package com.brycethuilot.auto_mailer;
+
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -63,8 +65,8 @@ public class Letter {
         toPrint.add(this.policy);
 
         List<String> names = new ArrayList<String>(2);
-        names.add("Letter to insured");
-        names.add("Policy for Insured");
+        names.add("com.brycethuilot.auto_mailer.Letter to insured");
+        names.add("com.brycethuilot.auto_mailer.Policy for Insured");
 
         Printer.printFiles(toPrint, names);
     }
@@ -124,7 +126,7 @@ public class Letter {
     }
 
     private void addCompanyAndPolicy(PDPageContentStream contentStream) throws IOException {
-        //Company and Policy Number
+        //Company and com.brycethuilot.auto_mailer.Policy Number
         this.newLine(contentStream, 2);
         contentStream.showText("RE:   Company: " + "Ocean Harbor Casualty");
         this.newLine(contentStream, 1);
