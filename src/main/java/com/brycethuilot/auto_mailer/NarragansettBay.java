@@ -36,6 +36,22 @@ public class NarragansettBay extends Policy {
      * {@inheritDoc}
      */
     @Override
+    public boolean sendToInsrured() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean sendToMortgagee() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected void setName(String pdfText) {
         this.name = this.cutToFrom(pdfText, "Name Insured\n", "\n");
     }

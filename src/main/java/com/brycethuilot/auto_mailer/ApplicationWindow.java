@@ -23,6 +23,13 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Main class for Application. Creates all windows and pop ups for asking user what to do with policy
+ *
+ * @author Bryce Thuilot
+ * @version %I%, %G%
+ * @since 1.0
+ */
 public class ApplicationWindow extends Application {
 
     private File policyFile;
@@ -55,14 +62,6 @@ public class ApplicationWindow extends Application {
     public void login(String username, String password) {
         this.username = username;
         this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public void setUpLogin() {
@@ -107,7 +106,7 @@ public class ApplicationWindow extends Application {
 
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage){
         primaryStage.setTitle("Mill Creek Agency Auto Insurance Mailer");
 
         this.primaryStage = primaryStage;
@@ -157,23 +156,45 @@ public class ApplicationWindow extends Application {
 
     }
 
+    private void sentEmailDialog(boolean success) {
+        final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(primaryStage);
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        if (success) {
+            grid.add(this.createText("Email successfully sent", 20, FontWeight.NORMAL), 0, 0);
+        }else {
+            grid.add(this.createText("Email could not be sent (most likely email address is wrong)", 20, FontWeight.NORMAL), 0, 0);
+        }
+        Button ok = new Button("Submit");
+        ok.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                dialog.close();
+            }
+        });
+        grid.add(ok, 0, 1);
+        Scene dialogScene = new Scene(grid, 500, 500);
+        dialog.setScene(dialogScene);
+        dialog.show();
+    }
+
     public void getEmailPassword(String to, Policy policy){
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(primaryStage);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        Text title = new Text("Please enter email password for " + Email.FROM);
-        title.setFont(Font.font("Helvetica Neue", FontWeight.NORMAL,20));
         PasswordField emailPassword = new PasswordField();
-        grid.add(title, 0, 0);
+        grid.add(this.createText("Please enter email password for " + Email.FROM, 20, FontWeight.NORMAL), 0, 0);
         grid.add(emailPassword, 0, 1);
         Button ok = new Button("Submit");
         ok.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 dialog.close();
-                policy.sendEmail(to, emailPassword.getText());
+                sentEmailDialog(policy.sendEmail(to, emailPassword.getText()));
             }
         });
         grid.add(ok, 0, 2);
@@ -402,14 +423,14 @@ public class ApplicationWindow extends Application {
                         policy.updateOnQQ();
                     }
 
-                    if (sendToInsured.isSelected()) {
+                    if (sendToInsured.isSelected() && policy.sendToInsrured()) {
                         policy.mailToInsured(application);
                     }
                 }catch (NotSignedInException signIn) {
                     errorPopup("Unable to sign into qq");
                 }
 
-                if(printForMortgage.isSelected()) {
+                if(printForMortgage.isSelected() && policy.sendToMortgagee()) {
                     try {
                         policy.printMortgagee();
                     } catch (IOException io) {

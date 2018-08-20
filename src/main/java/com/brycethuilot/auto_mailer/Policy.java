@@ -229,6 +229,18 @@ public abstract class Policy {
     }
 
     /**
+     * Tells if this policy type needs to be sent to the insured
+     * @return a boolean telling whether or not to send to insured
+     */
+    public abstract boolean sendToInsrured();
+
+    /**
+     * Tells if this policy type needs to be sent to the mortgagee
+     * @return a boolean telling whether or not to send to mortgagee
+     */
+    public abstract boolean sendToMortgagee();
+
+    /**
      * Returns the previous policies number based on the current policy number
      *
      * @return the old policy number
@@ -318,8 +330,9 @@ public abstract class Policy {
      *
      * @param to email address to send the email to
      * @param password password to the email set in the config
+     * @return if email was successfully sent
      */
-    void sendEmail(String to, String password) {
+    boolean sendEmail(String to, String password) {
         // Create email class
         Email email = new Email(password);
         // Get subject line
@@ -327,7 +340,7 @@ public abstract class Policy {
         // Get email body
         String body = email.emailBody(this.name, this.policyNumber, this.company, this.effectiveDate, this.expirationDate, this.renewal);
         // Send email
-        email.sendEmail(to, subject, body, this.policyFile.getAbsolutePath(), this.policyNumber + ".pdf");
+        return email.sendEmail(to, subject, body, this.policyFile.getAbsolutePath(), this.policyNumber + ".pdf");
     }
 
     /**

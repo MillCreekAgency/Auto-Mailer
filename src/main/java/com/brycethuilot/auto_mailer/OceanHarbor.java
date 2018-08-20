@@ -31,6 +31,22 @@ public class OceanHarbor extends Policy {
      * {@inheritDoc}
      */
     @Override
+    public boolean sendToInsrured() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean sendToMortgagee() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getOldPolicyNum() {
         String endingNumber = policyNumber.substring(policyNumber.length() - 2);
         endingNumber = (Integer.parseInt(endingNumber) - 1) + "";
