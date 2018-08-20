@@ -65,8 +65,8 @@ public class Letter {
         toPrint.add(this.policy);
 
         List<String> names = new ArrayList<String>(2);
-        names.add("com.brycethuilot.auto_mailer.Letter to insured");
-        names.add("com.brycethuilot.auto_mailer.Policy for Insured");
+        names.add("Letter to insured");
+        names.add("Policy for Insured");
 
         Printer.printFiles(toPrint, names);
     }
@@ -130,7 +130,7 @@ public class Letter {
         this.newLine(contentStream, 2);
         contentStream.showText("RE:   Company: " + "Ocean Harbor Casualty");
         this.newLine(contentStream, 1);
-        contentStream.showText("         PolicyNumber: " + this.policyNumber);
+        contentStream.showText("         Policy Number: " + this.policyNumber);
     }
 
     private void addHeader(PDPageContentStream contentStream) throws IOException{

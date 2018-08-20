@@ -19,9 +19,9 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.apache.xerces.dom.RangeImpl;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ApplicationWindow extends Application {
 
@@ -101,7 +101,7 @@ public class ApplicationWindow extends Application {
         this.setText();
         this.createCompanySelector(root);
         this.setOptionMenu();
-        this.updateButton(this);
+        this.updateButton(this, this.username, this.password);
     }
 
 
@@ -323,20 +323,20 @@ public class ApplicationWindow extends Application {
         dialog.initOwner(primaryStage);
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        // email Option
+        // email option
         this.addToGrid(grid, this.createText("Would you like to send an email", 20, FontWeight.NORMAL), 1, 0);
-        // com.brycethuilot.auto_mailer.Letter option
-        this.addToGrid(grid, this.createText("Or send a physical com.brycethuilot.auto_mailer.Letter", 20, FontWeight.NORMAL), 1, 2);
+        // letter option
+        this.addToGrid(grid, this.createText("Or send a physical letter", 20, FontWeight.NORMAL), 1, 2);
 
         Text emailFound;
         if (email == null) {
             emailFound = this.createText("No email found on QQ", 12, FontWeight.NORMAL);
         }else {
-            emailFound = this.createText("com.brycethuilot.auto_mailer.Email found on QQ: " + email, 12, FontWeight.NORMAL);
+            emailFound = this.createText("Email found on QQ: " + email, 12, FontWeight.NORMAL);
         }
         this.addToGrid(grid, emailFound, 1, 4);
 
-        Button emailButton = new Button("com.brycethuilot.auto_mailer.Email");
+        Button emailButton = new Button("Email");
         emailButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -345,12 +345,16 @@ public class ApplicationWindow extends Application {
             }
         });
 
-        Button letterButton = new Button("com.brycethuilot.auto_mailer.Letter");
+        Button letterButton = new Button("Letter");
         letterButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 dialog.close();
-                policy.sendLetter();
+                try {
+                    policy.sendLetter();
+                }catch (IOException io) {
+                    errorPopup("Unable to send letter");
+                }
             }
         });
 
@@ -368,20 +372,54 @@ public class ApplicationWindow extends Application {
     }
 
 
-    private void updateButton(ApplicationWindow application){
-        Button update = new Button("Update com.brycethuilot.auto_mailer.Policy");
+    private void updateButton(ApplicationWindow application, String username, String password){
+        Button update = new Button("Update Policy");
         update.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if(policyFile == null) {
-                   errorPopup("Error");
-                }else {
+                   errorPopup("Error please select a policy");
+                   return;
+                }
+                Policy policy;
+                try {
                     if (oceanHarbor.isSelected()) {
-                        OceanHarbor oc = new OceanHarbor(policyFile, updateInQQ.isSelected(), printForMortgage.isSelected(), sendToInsured.isSelected(), application);
-                    } else if (nBay.isSelected()) {
-                        NarragansettBay nb = new NarragansettBay(policyFile, updateInQQ.isSelected(), application);
+                        policy = new OceanHarbor(policyFile);
+                    } else {
+                        policy = new NarragansettBay(policyFile);
+                    }
+                }catch (IOException io) {
+                    errorPopup("Unable to read PDF");
+                    return;
+                }
+
+                if(updateInQQ.isSelected() || sendToInsured.isSelected()) {
+                    policy.qqSignIn(username, password);
+                }
+
+                try {
+                    if (updateInQQ.isSelected()) {
+                        policy.updateOnQQ();
+                    }
+
+                    if (sendToInsured.isSelected()) {
+                        policy.mailToInsured(application);
+                    }
+                }catch (NotSignedInException signIn) {
+                    errorPopup("Unable to sign into qq");
+                }
+
+                if(printForMortgage.isSelected()) {
+                    try {
+                        policy.printMortgagee();
+                    } catch (IOException io) {
+                        errorPopup("Unable to print mortgage pages");
                     }
                 }
+
+                policy.closeQQ();
+
+
             }
         });
         root.add(update, 1, UPDATE_BUTTON);

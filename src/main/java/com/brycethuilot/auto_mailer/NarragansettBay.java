@@ -1,3 +1,5 @@
+package com.brycethuilot.auto_mailer;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.File;
@@ -6,8 +8,8 @@ import java.util.HashMap;
 
 public class NarragansettBay extends Policy {
 
-    public NarragansettBay(File policyFile, boolean updateInQQ, ApplicationWindow applicationWindow) {
-        super(policyFile, updateInQQ, false, false, applicationWindow);
+    public NarragansettBay(File policyFile) throws IOException {
+        super(policyFile);
     }
 
     @Override
@@ -73,8 +75,8 @@ public class NarragansettBay extends Policy {
     }
 
     @Override
-    public String getOldPolicyNum(String currentPolicyNum) {
-        return currentPolicyNum.substring(0, currentPolicyNum.indexOf(','));
+    public String getOldPolicyNum() {
+        return policyNumber.substring(0, policyNumber.indexOf(','));
     }
 
     @Override

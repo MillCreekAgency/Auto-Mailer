@@ -11,18 +11,25 @@ import java.util.List;
 
 public class OceanHarbor extends Policy {
 
-    public OceanHarbor(File policyFile, boolean updateInQQ, boolean printMortgage, boolean mailToInsured, ApplicationWindow applicationWindow) {
-        super(policyFile, updateInQQ, printMortgage, mailToInsured, applicationWindow);
+    /**
+     *
+     * @param policyFile the PDF OceanHarbor Policy
+     * @throws IOException if the PDF cannot be read
+     */
+    OceanHarbor(File policyFile) throws IOException {
+        super(policyFile);
     }
 
     @Override
-    public String getOldPolicyNum(String currentPolicyNum) {
-        String endingNumber = currentPolicyNum.substring(currentPolicyNum.length() - 2);
+    public String getOldPolicyNum() {
+        String endingNumber = policyNumber.substring(policyNumber.length() - 2);
         endingNumber = (Integer.parseInt(endingNumber) - 1) + "";
         if(endingNumber.length() == 1) {
             endingNumber  = "0" + endingNumber;
+        }else if(endingNumber.equals("-1")) {
+            return policyNumber;
         }
-        return currentPolicyNum.substring(0,currentPolicyNum.length() - 2) + endingNumber;
+        return policyNumber.substring(0, policyNumber.length() - 2) + endingNumber;
     }
 
     @Override
@@ -128,8 +135,13 @@ public class OceanHarbor extends Policy {
     }
 
     @Override
-    protected void setRenewal(String pdfText) {
+    protected void setCompany() {
+        this.company = "Ocean Harbor Casualty";
+    }
 
+    @Override
+    protected void setRenewal(String pdfText) {
+        this.renewal = !this.policyNumber.equals(this.getOldPolicyNum());
     }
 
     @Override

@@ -9,9 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class QQUpdater {
-    String login;
-    String password;
-    WebDriver driver;
+    private String email;
+    private String login;
+    private String password;
+    private WebDriver driver;
+    private boolean checkedEmail;
 
     public QQUpdater(String login, String password){
         this.login = login;
@@ -27,6 +29,10 @@ public class QQUpdater {
     }
 
     public String getEmail(String oldPolicyNum){
+        if(this.checkedEmail) {
+            return this.email;
+        }
+
         sleep(2);
         try{
           driver.findElement(By.className("wm-close-button")).click();
@@ -49,21 +55,27 @@ public class QQUpdater {
         }
 
         this.sleep(2);
+
+        this.checkedEmail = true;
         try {
             WebElement email = driver.findElement(By.className("overview-email-link"));
-            return email.getAttribute("innerHTML");
+            this.email = email.getAttribute("innerHTML");
+            return this.email;
         } catch(org.openqa.selenium.NoSuchElementException ex) {
             return null;
         }
 
     }
 
-    public void updatePolicy(String policyNum, double premium, HashMap<Integer, Double> coverages, int[] deductibles, boolean dwelling) {
+    public void updatePolicy(String policyNum, String oldPolicyNumber, double premium, HashMap<Integer, Double> coverages, int[] deductibles, boolean dwelling) {
+        if(!this.checkedEmail) {
+            this.getEmail(oldPolicyNumber);
+        }
         WebElement renewalButton = driver.findElement(By.className("PolicyActionRenew"));
         while (!renewalButton.isDisplayed()) {
             List<WebElement> labels = driver.findElements(By.className("Label"));
 
-           this.findButton(labels, "com.brycethuilot.auto_mailer.Policy Action");
+           this.findButton(labels, "Policy Action");
         }
 
         renewalButton.click();
@@ -220,7 +232,6 @@ public class QQUpdater {
 
 
     private void login() {
-
         if(driver.getCurrentUrl().contains("login.qqcatalyst.com")) {
             driver.findElement(By.name("txtEmail")).sendKeys(login);
             driver.findElement(By.id("txtPassword")).sendKeys(password);
