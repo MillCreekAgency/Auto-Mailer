@@ -12,6 +12,14 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Creates a PDF that is to be sent as a physical letter to the insured in case no email is present on QQ for an insured
+ * Can also open printer dialog to print and send, with the necessary PDF pages
+ *
+ * @author Bryce Thuilot
+ * @version %I%, %G%
+ * @since 1.0
+ */
 public class Letter {
 
 
@@ -33,17 +41,29 @@ public class Letter {
     static PDFont NORMAL_FONT = PDType1Font.TIMES_ROMAN;
 
 
-
-    public Letter(String policyNumber, String name, String address) {
+    /**
+     * Creates a Letter object
+     * @param policyNumber policy number of the policy
+     * @param name Name of the insured
+     * @param address address of the insured
+     * @throws IOException if the letter could not be created
+     */
+    Letter(String policyNumber, String name, String address) throws IOException{
         this.policyNumber = policyNumber;
         Date date = new Date();
         SimpleDateFormat df = new SimpleDateFormat("E MMM d, yyyy");
         this.dateString =  df.format(date);
         this.name = name;
         this.address = address;
+        this.createLetter();
     }
 
-    public void addPolicy(PDDocument policy) throws IOException {
+    /**
+     * Adds a policy to be printed in addition with the letter
+     * @param policy the PDF policy file
+     * @throws IOException if the PDF could not be read
+     */
+    void addPolicy(PDDocument policy) throws IOException {
         this.policy = new PDDocument();
 
         Splitter splitter = new Splitter();
@@ -59,7 +79,10 @@ public class Letter {
     }
 
 
-    public void printLetter() {
+    /**
+     * Prints the letter and policy (if added)
+     */
+    void print() {
         List<PDDocument> toPrint = new ArrayList<PDDocument>(2);
         toPrint.add(this.letter);
         toPrint.add(this.policy);
@@ -71,7 +94,11 @@ public class Letter {
         Printer.printFiles(toPrint, names);
     }
 
-    public void createLetter() throws IOException{
+    /**
+     * Creates the letter from the contents given when constructed
+     * @throws IOException if the letter could not be read
+     */
+    private void createLetter() throws IOException{
         // Create a document and add a page to it
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
@@ -96,19 +123,36 @@ public class Letter {
     }
 
 
-    public void newLine(PDPageContentStream stream, int amount) throws IOException{
+    /**
+     * Adds a given amount of new lines to a PDPage content stream
+     *
+     * @param stream content stream for PDPage
+     * @param amount amount of new lines
+     * @throws IOException if stream could not be read
+     */
+    private void newLine(PDPageContentStream stream, int amount) throws IOException{
         for(int i = 0; i < amount; i++) {
             stream.newLine();
         }
     }
 
 
+    /**
+     * Adds the name to the PDPageConetentStream
+     * @param contentStream the content stream to add to
+     * @throws IOException if contentStream could not be read
+     */
     private void addName(PDPageContentStream contentStream) throws IOException{
         //Name
         contentStream.newLineAtOffset(0, -50);
         contentStream.showText(this.name);
     }
 
+    /**
+     * Adds the address to the PDPageConetentStream
+     * @param contentStream the content stream to add to
+     * @throws IOException if contentStream could not be read
+     */
     private void addAddress(PDPageContentStream contentStream) throws IOException {
         // Address
         contentStream.newLine();
@@ -119,12 +163,22 @@ public class Letter {
         }
     }
 
+    /**
+     * Adds the date to the PDPageConetentStream
+     * @param contentStream the content stream to add to
+     * @throws IOException if contentStream could not be read
+     */
     private void addDate(PDPageContentStream contentStream) throws IOException{
         // Date
         contentStream.newLineAtOffset(75, 580);
         contentStream.showText(this.dateString);
     }
 
+    /**
+     * Adds the company and policy number to the PDPageConetentStream
+     * @param contentStream the content stream to add to
+     * @throws IOException if contentStream could not be read
+     */
     private void addCompanyAndPolicy(PDPageContentStream contentStream) throws IOException {
         //Company and com.brycethuilot.auto_mailer.Policy Number
         this.newLine(contentStream, 2);
@@ -133,6 +187,11 @@ public class Letter {
         contentStream.showText("         Policy Number: " + this.policyNumber);
     }
 
+    /**
+     * Adds the header to the PDPageConetentStream
+     * @param contentStream the content stream to add to
+     * @throws IOException if contentStream could not be read
+     */
     private void addHeader(PDPageContentStream contentStream) throws IOException{
         this.addDate(contentStream);
         this.addName(contentStream);
@@ -140,6 +199,11 @@ public class Letter {
         this.addCompanyAndPolicy(contentStream);
     }
 
+    /**
+     * Adds the letter body to the PDPageConetentStream
+     * @param contentStream the content stream to add to
+     * @throws IOException if contentStream could not be read
+     */
     private void addBody(PDPageContentStream contentStream) throws IOException {
         // Name
         contentStream.newLineAtOffset(0,-50);

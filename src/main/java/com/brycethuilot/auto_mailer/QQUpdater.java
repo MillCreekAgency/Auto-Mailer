@@ -8,6 +8,14 @@ import org.openqa.selenium.support.ui.Select;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Class used to open a chrome window controlled by a web driver
+ * can update a policy and get email assocated with user on QQCatalyst.com
+ *
+ * @author Bryce Thuilot
+ * @version %I%, %G%
+ * @since 1.0
+ */
 public class QQUpdater {
     private String email;
     private String login;
@@ -15,6 +23,11 @@ public class QQUpdater {
     private WebDriver driver;
     private boolean checkedEmail;
 
+    /**
+     * Creates a chrome window and logs in into QQCatalyst with given information
+     * @param login the email to use to login
+     * @param password the password to use to login
+     */
     public QQUpdater(String login, String password){
         this.login = login;
         this.password = password;
@@ -23,12 +36,20 @@ public class QQUpdater {
         this.login();
     }
 
+    /**
+     * Closes WebDriver (should be called when done updating)
+     */
     public void close(){
         driver.close();
         driver.quit();
     }
 
-    public String getEmail(String oldPolicyNum){
+    /**
+     * Gets the email from a given policy number
+     * @param policyNum policy number of policy to navigate to
+     * @return the string of the email found, null if nothing found
+     */
+    public String getEmail(String policyNum){
         if(this.checkedEmail) {
             return this.email;
         }
@@ -41,14 +62,14 @@ public class QQUpdater {
             System.out.println(ex.getLocalizedMessage());
         }
         // Enter old policy number into search bar
-        driver.findElement(By.id("contact-search-text")).sendKeys(oldPolicyNum);
+        driver.findElement(By.id("contact-search-text")).sendKeys(policyNum);
         // Click go for search
         driver.findElement(By.id("contact-search-go")).click();
         this.sleep(3);
         List<WebElement> searchResults = driver.findElements(By.tagName("a"));
 
         for(WebElement link : searchResults) {
-            if (link.getAttribute("innerHTML").contains(oldPolicyNum) && link.isDisplayed()) {
+            if (link.getAttribute("innerHTML").contains(policyNum) && link.isDisplayed()) {
                 link.click();
                 break;
             }
@@ -67,8 +88,17 @@ public class QQUpdater {
 
     }
 
+    /**
+     * Updates a policy on QQ catalyst with given information
+     * @param policyNum new policy number of policy
+     * @param oldPolicyNumber policy number of policy to update
+     * @param premium premium of the policy
+     * @param coverages coverages of policy mapped to there CSS option value
+     * @param deductibles deductible and hurricane deductible in an array
+     * @param dwelling whether the policy is dwelling or not
+     */
     public void updatePolicy(String policyNum, String oldPolicyNumber, double premium, HashMap<Integer, Double> coverages, int[] deductibles, boolean dwelling) {
-        if(!this.checkedEmail) {
+        if(!driver.getCurrentUrl().contains("https://app.qqcatalyst.com/Policies/Policy/Details/")) {
             this.getEmail(oldPolicyNumber);
         }
         WebElement renewalButton = driver.findElement(By.className("PolicyActionRenew"));
@@ -197,6 +227,11 @@ public class QQUpdater {
         this.sleep(1);
     }
 
+    /**
+     * Fille the coverage inputs
+     * @param coverages coverages mapped to there CSS option
+     * @param inputs each row of the input for coverages
+     */
     private void fillCoverages(HashMap<Integer, Double> coverages, List<WebElement> inputs) {
         for(WebElement currentInput : inputs) {
             try {
@@ -211,16 +246,32 @@ public class QQUpdater {
         }
     }
 
+    /**
+     * Fill a input with a double
+     * @param element element to send keys to
+     * @param number number to fill in
+     */
     private void fillNumberInput(WebElement element, double number) {
         element.clear();
         element.sendKeys(number + "");
     }
 
+
+    /**
+     * Fill a input with an int
+     * @param element element to send keys to
+     * @param number number to fill in
+     */
     private void fillNumberInput(WebElement element, int number) {
         element.clear();
         element.sendKeys(number + "");
     }
 
+    /**
+     * Finds a button in a list of buttons with given text that is displayed
+     * @param buttons List of buttons to search
+     * @param text text for button to have
+     */
     private void findButton(List<WebElement> buttons, String text) {
         for(WebElement button : buttons) {
             if(button.getAttribute("innerHTML").contains(text) && button.isDisplayed()) {
@@ -231,6 +282,9 @@ public class QQUpdater {
     }
 
 
+    /**
+     * Logs into qq catalyst
+     */
     private void login() {
         if(driver.getCurrentUrl().contains("login.qqcatalyst.com")) {
             driver.findElement(By.name("txtEmail")).sendKeys(login);
@@ -243,6 +297,10 @@ public class QQUpdater {
         }
     }
 
+    /**
+     * Has program sleep for a given number of seconds
+     * @param seconds amount of seconds to sleep
+     */
     private void sleep(int seconds) {
         try {
             Thread.sleep(seconds * 1000);

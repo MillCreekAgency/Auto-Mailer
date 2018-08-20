@@ -9,10 +9,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * OceanHarbor is a subclass of Policy. It can support PDF's created by Ocean Harbor Casualty Insurance in both HO3 and Dwelling format
+ * @author Bryce Thuilot
+ * @version %I%, %G%
+ * @since 1.0
+ */
 public class OceanHarbor extends Policy {
 
+
     /**
-     *
+     * Returns a OceanHarbor Object which can be used by ApplicationWindow
      * @param policyFile the PDF OceanHarbor Policy
      * @throws IOException if the PDF cannot be read
      */
@@ -20,6 +27,9 @@ public class OceanHarbor extends Policy {
         super(policyFile);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getOldPolicyNum() {
         String endingNumber = policyNumber.substring(policyNumber.length() - 2);
@@ -32,6 +42,9 @@ public class OceanHarbor extends Policy {
         return policyNumber.substring(0, policyNumber.length() - 2) + endingNumber;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void printMortgagee() throws IOException {
         PDDocument doc = PDDocument.load(this.policyFile);
@@ -52,6 +65,9 @@ public class OceanHarbor extends Policy {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PDDocument getLetterPages(File policy) throws IOException{
         PDDocument doc = PDDocument.load(this.policyFile);
@@ -71,34 +87,44 @@ public class OceanHarbor extends Policy {
         return letterPDF;
     }
 
-    private boolean isDwelling(String pdfText) {
-        return pdfText.contains("DWELLING PROPERTY POLICY");
-    }
 
-    public HashMap<Integer, Double> findDwellingCoverages(String policy) {
+    /**
+     *  Maps Dwelling coverages to their QQ Catalyst css option number
+     * @param pdfText
+     * @return Each coverage value mapped to the CSS option number
+     */
+    public HashMap<Integer, Double> findDwellingCoverages(String pdfText) {
         HashMap<Integer, Double> coverages = new HashMap<Integer, Double>();
-        coverages.put(315, this.getDoubleValue(this.cutToFrom(policy, "Dwelling $", "Fire")));
-        coverages.put(683, this.getDoubleValue(this.cutToFrom(policy, "Other Structure", "  ")));
-        coverages.put(753, this.getDoubleValue(this.cutToFrom(policy, "Personal Property","  " )));
-        coverages.put(576 , this.getDoubleValue(this.cutToFrom(policy, "Fair Rental Value", "\n")));
-        coverages.put(576,  coverages.get(576) + this.getDoubleValue(this.cutToFrom(policy, "Additional Living Expense", "\n")));
-        coverages.put(732, this.getDoubleValue(this.cutToFrom(policy, "Personal Liability", "\n")));
-        coverages.put(602, this.getDoubleValue(this.cutToFrom(policy, "Medical Payments to Others", "\n")));
-        //coverages.put(728, Double.parseDouble(this.cutToFrom(policy, "Personal Injury",  "\n")));
+        coverages.put(315, this.getDoubleValue(this.cutToFrom(pdfText, "Dwelling $", "Fire")));
+        coverages.put(683, this.getDoubleValue(this.cutToFrom(pdfText, "Other Structure", "  ")));
+        coverages.put(753, this.getDoubleValue(this.cutToFrom(pdfText, "Personal Property","  " )));
+        coverages.put(576 , this.getDoubleValue(this.cutToFrom(pdfText, "Fair Rental Value", "\n")));
+        coverages.put(576,  coverages.get(576) + this.getDoubleValue(this.cutToFrom(pdfText, "Additional Living Expense", "\n")));
+        coverages.put(732, this.getDoubleValue(this.cutToFrom(pdfText, "Personal Liability", "\n")));
+        coverages.put(602, this.getDoubleValue(this.cutToFrom(pdfText, "Medical Payments to Others", "\n")));
+        //coverages.put(728, Double.parseDouble(this.cutToFrom(pdfText, "Personal Injury",  "\n")));
         return coverages;
     }
 
-    public HashMap<Integer, Double> findHOCoverages(String policy) {
+    /**
+     * Maps Homeowners coverages to their QQ Catalyst css option number
+     * @param pdfText text contents of the PDF
+     * @return Each coverage value mapped to the CSS option number
+     */
+    public HashMap<Integer, Double> findHOCoverages(String pdfText) {
         HashMap<Integer, Double> coverages = new HashMap<>();
-        coverages.put(315, this.getDoubleValue(this.cutSection(policy, "Building", 12)));
-        coverages.put(683, this.getDoubleValue(this.cutSection(policy, "Other Structure", 10)));
-        coverages.put(753, this.getDoubleValue(this.cutSection(policy, "Personal Property", 11)));
-        coverages.put(576, this.getDoubleValue(this.cutSection(policy, "Loss of Use", 11)));
-        coverages.put(732, this.getDoubleValue(this.cutSection(policy, "Personal Liability", 8)));
-        coverages.put(602, this.getDoubleValue(this.cutSection(policy, "Medical Payments to Others", 7)));
+        coverages.put(315, this.getDoubleValue(this.cutSection(pdfText, "Building", 12)));
+        coverages.put(683, this.getDoubleValue(this.cutSection(pdfText, "Other Structure", 10)));
+        coverages.put(753, this.getDoubleValue(this.cutSection(pdfText, "Personal Property", 11)));
+        coverages.put(576, this.getDoubleValue(this.cutSection(pdfText, "Loss of Use", 11)));
+        coverages.put(732, this.getDoubleValue(this.cutSection(pdfText, "Personal Liability", 8)));
+        coverages.put(602, this.getDoubleValue(this.cutSection(pdfText, "Medical Payments to Others", 7)));
         return coverages;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setName(String pdfText) {
         String nameAndAddress = pdfText.substring(pdfText.indexOf("Insured\n") + 8);
@@ -107,6 +133,9 @@ public class OceanHarbor extends Policy {
         this.name = nameAndAddress.substring(0, nameAndAddress.indexOf("\n"));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setAddress(String pdfText) {
         String nameAndAddress = pdfText.substring(pdfText.indexOf("Insured\n") + 8);
@@ -115,16 +144,25 @@ public class OceanHarbor extends Policy {
         this.address = nameAndAddress.substring(nameAndAddress.indexOf("\n"));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setPolicyNumber(String pdfText) {
         this.policyNumber = pdfText.substring(pdfText.indexOf("POLICY NUMBER") - 13,pdfText.indexOf("POLICY NUMBER") - 1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setCoverages(String pdfText) {
         this.coverages = this.dwelling ? this.findDwellingCoverages(pdfText) : this.findHOCoverages(pdfText);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setDates(String pdfText) {
         int dateStartIndex = pdfText.indexOf("FROM TO");
@@ -134,21 +172,33 @@ public class OceanHarbor extends Policy {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setCompany() {
         this.company = "Ocean Harbor Casualty";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setRenewal(String pdfText) {
         this.renewal = !this.policyNumber.equals(this.getOldPolicyNum());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setPremium(String pdfText) {
         this.premium = this.getDoubleValue(cutSection(pdfText, "Total Policy Premium: ", 8));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setDeductibles(String pdfText) {
         this.deductible = this.getIntValue(this.cutSection(pdfText, "otherwise\n", 6));
@@ -161,8 +211,11 @@ public class OceanHarbor extends Policy {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setDwelling(String pdfText) {
-        this.dwelling = this.isDwelling(pdfText);
+        this.dwelling = pdfText.contains("DWELLING PROPERTY POLICY");
     }
 }

@@ -9,6 +9,14 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.activation.*;
 
+/**
+ * Email class can be used to send emails with attachments from the address set in the config
+ * It uses office365 smtp to send mail
+ *
+ * @author Bryce Thuilot
+ * @version %I%, %G%
+ * @since 1.0
+ */
 public class Email {
     static final String FROM = "bryce@millcreekagency.com";
     static final String FROMNAME = "Bryce Thuilot";
@@ -19,12 +27,24 @@ public class Email {
     private String stmpPassword;
 
 
-
-    public Email(String stmpPassword) {
+    /**
+     * Returns an email object to be used to send email once logined in
+     * @param stmpPassword password to use to login
+     */
+    Email(String stmpPassword) {
         this.stmpPassword = stmpPassword;
     }
 
-    public boolean sendEmail(String to, String subject, String body , String attachment, String fileName) {
+    /**
+     * Send an email to the address given with the given, subject, body attachment and attachment name
+     * @param to the address to send to
+     * @param subject the subject of the email
+     * @param body the body of the email
+     * @param attachment attachment file
+     * @param fileName the name to give to the attacment
+     * @return true if successfully sent, false if not
+     */
+    boolean sendEmail(String to, String subject, String body , String attachment, String fileName) {
         Transport transport;
         Properties props = System.getProperties();
         props.put("mail.transport.protocol", "smtp");
@@ -59,7 +79,7 @@ public class Email {
             transport.connect(HOST, SMTP_USERNAME, stmpPassword);
 
             transport.sendMessage(message, message.getAllRecipients());
-            System.out.println("com.brycethuilot.auto_mailer.Email Sent");
+            System.out.println("Email Sent");
             transport.close();
 
         }
@@ -73,6 +93,10 @@ public class Email {
 
     }
 
+    /**
+     * Formats the main body of a renewal email
+     * @return the formatted renewal email body, as a string
+     */
     private String formatRenewalEmail() {
         return String.join(
                 System.getProperty("line.separator"),
@@ -88,7 +112,19 @@ public class Email {
         );
     }
 
-    public String emailBody(String name, String policyNumber, String company, String effectiveDate, String expirationDate, boolean renewal) {
+
+    /**
+     * Creates and returns the email body with the given information
+     *
+     * @param name name of the insured that the email is being sent to
+     * @param policyNumber polciy number of the policy
+     * @param company company of the policy
+     * @param effectiveDate effective date of the policy
+     * @param expirationDate expiration date of the policy
+     * @param renewal whether or not its a renewal
+     * @return the formatted email body, as a string
+     */
+    String emailBody(String name, String policyNumber, String company, String effectiveDate, String expirationDate, boolean renewal) {
         return String.join(
                 System.getProperty("line.separator"),
                 "<span style='font-family: \"Times New Roman\", Times, serif'>",
@@ -119,6 +155,12 @@ public class Email {
         );
     }
 
+    /**
+     * Formats the email body if it is a new policy
+     * @param effectiveDate effective date of the policy
+     * @param expirationDate expiration date of the policy
+     * @return the formatted new policy body, as a string
+     */
     private String formatNewBusinessEmail(String effectiveDate, String expirationDate) {
         return String.join(
                 System.getProperty("line.separator"),

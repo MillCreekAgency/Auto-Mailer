@@ -9,14 +9,32 @@ import java.awt.print.PrinterJob;
 import java.util.List;
 
 
+/**
+ * static class created to print PDDocuments using PDFBox's printing classes
+ * Uses the system printing dialog
+ *
+ * @author Bryce Thuilot
+ * @version %I%, %G%
+ * @since 1.0
+ */
 public class Printer {
 
 
-    public static void printFile(PDDocument file, String jobName) {
+    /**
+     * Prints a given PDDocument with a given jobName
+     * @param file PDDocuemnt to print
+     * @param jobName Name to give printing job
+     */
+    static void printFile(PDDocument file, String jobName) {
         print(file, jobName);
     }
 
-    public static void printFiles(List<PDDocument> toPrint, List<String> name) {
+    /**
+     *  Prints multiple PDDocument with multiple names, (i.e. toPrint.get(0) is printed with name.get(0) job name)
+     * @param toPrint List of PDDocuments to print
+     * @param name list of names to given jobs
+     */
+    static void printFiles(List<PDDocument> toPrint, List<String> name) {
         printMutliple(toPrint, name);
     }
 
@@ -57,6 +75,11 @@ public class Printer {
         new Thread(task).start();
     }
 
+    /**
+     * Prints the given PDDoucment with the given job name
+     * @param document PDDocument to print
+     * @param name name to given job
+     */
     private static void print(PDDocument document, String name) {
 
         //Create new Task

@@ -63,7 +63,7 @@ public abstract class Policy {
     // If the policy is a renew or not
      boolean renewal;
     // If the the policy is dwelling, if not it is homeowners
-     boolean dwelling;
+    boolean dwelling;
 
 
     // QQUpdater to update policy on QQCatalyst
@@ -283,10 +283,9 @@ public abstract class Policy {
      */
     void sendLetter() throws IOException {
         Letter letter = new Letter(this.policyNumber, this.name, this.address);
-        letter.createLetter();
         letter.addPolicy(this.getLetterPages(this.policyFile));
         System.out.println("Running");
-        letter.printLetter();
+        letter.print();
     }
 
     /**
