@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Main class for Application. Creates all windows and pop ups for asking user what to do with policy
@@ -45,8 +46,10 @@ public class ApplicationWindow extends Application {
     private RadioButton oceanHarbor;
     private RadioButton nBay;
 
+    private static Config config;
+
     private String password;
-    private String username = "dean@millcreekagency.com";
+    public static String username = "dean@millcreekagency.com";
 
     private final static int TITLE_ROW = 1;
     private final static int COMPANY_SELECT = 4;
@@ -60,7 +63,16 @@ public class ApplicationWindow extends Application {
      * @param args commandline arguments
      */
     public static void main(String[] args) {
+        try {
+            config = new Config();
+        }catch (IOException io) {
+            System.exit(1);
+        }
         launch(args);
+    }
+
+    static void setSetting(HashMap<String, String> setting) {
+        username = setting.get("default_qq_username");
     }
 
     /**
@@ -107,12 +119,31 @@ public class ApplicationWindow extends Application {
 
     }
 
+
+    private void setUpSettings() {
+
+    }
+
+
+    private void createSettingsButton() {
+        Button settings = new Button("Settings");
+        settings.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                root.getChildren().remove(0, root.getChildren().size());
+                setUpSettings();
+            }
+        });
+        root.add(settings, 3, TITLE_ROW);
+    }
+
     /**
      * Sets up the updater view
      */
     public void setUpUpdater() {
         this.setUpFileSelector();
         this.createTitle();
+        this.createSettingsButton();
         this.createCompanySelector(root);
         this.setOptionMenu();
         this.updateButton(this, this.username, this.password);
@@ -196,7 +227,7 @@ public class ApplicationWindow extends Application {
         }else {
             grid.add(this.createText("Email could not be sent (most likely email address is wrong)", 20, FontWeight.NORMAL), 0, 0);
         }
-        Button ok = new Button("Submit");
+        Button ok = new Button("OK");
         ok.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -228,7 +259,12 @@ public class ApplicationWindow extends Application {
             @Override
             public void handle(ActionEvent event) {
                 dialog.close();
-                sentEmailDialog(policy.sendEmail(to, emailPassword.getText()));
+                try {
+                    policy.sendEmail(to, emailPassword.getText());
+                }catch(Exception ex) {
+                    sentEmailDialog(false);
+                }
+                sentEmailDialog(true);
             }
         });
         grid.add(ok, 0, 2);
@@ -487,8 +523,10 @@ public class ApplicationWindow extends Application {
                 try {
                     if (oceanHarbor.isSelected()) {
                         policy = new OceanHarbor(policyFile);
-                    } else {
+                    } else if (nBay.isSelected()){
                         policy = new NarragansettBay(policyFile);
+                    } else {
+                        return;
                     }
                 }catch (IOException io) {
                     errorPopup("Unable to read PDF");

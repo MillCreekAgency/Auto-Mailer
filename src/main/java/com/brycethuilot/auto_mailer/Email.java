@@ -1,5 +1,6 @@
 package com.brycethuilot.auto_mailer;
 
+import java.util.HashMap;
 import java.util.Properties;
 
 import javax.mail.*;
@@ -18,12 +19,12 @@ import javax.activation.*;
  * @since 1.0
  */
 public class Email {
-    static final String FROM = "bryce@millcreekagency.com";
-    static final String FROMNAME = "Bryce Thuilot";
-    static final String SMTP_USERNAME = FROM;
-    static final String CONFIGSET = "ConfigSet";
-    static final String HOST = "smtp.office365.com";
-    static final int PORT = 587;
+    static String FROM;
+    static String FROMNAME;
+    static String SMTP_USERNAME = FROM;
+    static String CONFIGSET = "ConfigSet";
+    static String HOST ;
+    static int PORT ;
     private String stmpPassword;
 
 
@@ -35,6 +36,13 @@ public class Email {
         this.stmpPassword = stmpPassword;
     }
 
+    static void setSettings(HashMap<String, String> settings) {
+        FROM = settings.get("from_email");
+        FROMNAME = settings.get("from_name");
+        HOST = settings.get("smtp_host");
+        PORT = Integer.parseInt(settings.get("port"));
+    }
+
     /**
      * Send an email to the address given with the given, subject, body attachment and attachment name
      * @param to the address to send to
@@ -44,7 +52,7 @@ public class Email {
      * @param fileName the name to give to the attacment
      * @return true if successfully sent, false if not
      */
-    boolean sendEmail(String to, String subject, String body , String attachment, String fileName) {
+    boolean sendEmail(String to, String subject, String body , String attachment, String fileName) throws Exception{
         Transport transport;
         Properties props = System.getProperties();
         props.put("mail.transport.protocol", "smtp");
@@ -55,39 +63,30 @@ public class Email {
         Session session = Session.getDefaultInstance(props);
 
         MimeMessage message = new MimeMessage(session);
-        try {
-            MimeBodyPart emailAttachment = new MimeBodyPart();
-            MimeBodyPart emailBody = new MimeBodyPart();
-            Multipart multipart = new MimeMultipart();
-            message.setFrom(new InternetAddress(FROM, FROMNAME));
-            message.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
-            message.setSubject(subject);
-            emailBody.setContent(body, "text/html");
-            multipart.addBodyPart(emailBody);
+        MimeBodyPart emailAttachment = new MimeBodyPart();
+        MimeBodyPart emailBody = new MimeBodyPart();
+        Multipart multipart = new MimeMultipart();
+        message.setFrom(new InternetAddress(FROM, FROMNAME));
+        message.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+        message.setSubject(subject);
+        emailBody.setContent(body, "text/html");
+        multipart.addBodyPart(emailBody);
 
-            emailAttachment.setFileName(fileName);
-            javax.activation.DataSource source = new FileDataSource(attachment);
-            emailAttachment.setDataHandler(new DataHandler(source));
-            multipart.addBodyPart(emailAttachment);
+        emailAttachment.setFileName(fileName);
+        javax.activation.DataSource source = new FileDataSource(attachment);
+        emailAttachment.setDataHandler(new DataHandler(source));
+        multipart.addBodyPart(emailAttachment);
 
-            message.setContent(multipart);
-            message.setHeader("X-SES-CONFIGURATION-SET", CONFIGSET);
+        message.setContent(multipart);
+        message.setHeader("X-SES-CONFIGURATION-SET", CONFIGSET);
 
-            transport = session.getTransport();
+        transport = session.getTransport();
 
-            System.out.println("Sending... ");
-            transport.connect(HOST, SMTP_USERNAME, stmpPassword);
+        transport.connect(HOST, SMTP_USERNAME, stmpPassword);
 
-            transport.sendMessage(message, message.getAllRecipients());
-            System.out.println("Email Sent");
-            transport.close();
+        transport.sendMessage(message, message.getAllRecipients());
+        transport.close();
 
-        }
-        catch (Exception ex) {
-            System.out.println("The email was not sent.");
-            System.out.println("Error message: " + ex.getMessage());
-            return false;
-        }
 
         return true;
 

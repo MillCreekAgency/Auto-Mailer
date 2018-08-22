@@ -1,0 +1,6 @@
+default_qq_username=dean@millcreekagency.com
+from_email=bryce@millcreekagency
+from_name=Bryce Thuilot
+smtp_host=smtp.office365.com
+port=587
+remote_mode=false

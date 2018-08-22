@@ -97,7 +97,7 @@ public abstract class Policy {
      * @return the text contents of the PDF
      * @throws IOException If Java is unable to open the PDF file
      */
-    private static String getPDFText(File pdf) throws IOException{
+    static String getPDFText(File pdf) throws IOException{
         RandomAccessRead randomAccessFile = new RandomAccessFile(pdf, "r");
         PDFParser parser = new PDFParser(randomAccessFile);
         parser.parse();
@@ -335,7 +335,7 @@ public abstract class Policy {
      * @param password password to the email set in the config
      * @return if email was successfully sent
      */
-    boolean sendEmail(String to, String password) {
+    void sendEmail(String to, String password) throws Exception{
         // Create email class
         Email email = new Email(password);
         // Get subject line
@@ -343,7 +343,7 @@ public abstract class Policy {
         // Get email body
         String body = email.emailBody(this.name, this.policyNumber, this.company, this.effectiveDate, this.expirationDate, this.renewal);
         // Send email
-        return email.sendEmail(to, subject, body, this.policyFile.getAbsolutePath(), this.policyNumber + ".pdf");
+        email.sendEmail(to, subject, body, this.policyFile.getAbsolutePath(), this.policyNumber + ".pdf");
     }
 
     /**
