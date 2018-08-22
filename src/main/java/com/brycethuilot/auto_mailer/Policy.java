@@ -81,6 +81,7 @@ public abstract class Policy {
      * Policy class is a parent class of the other types of Policies @see com.brycethuilot.auto_mailer.OceanHarbor,  com.brycethuilot.auto_mailer.NarragansetBay
      *
      * @param policyFile File object that points to the PDF to read in
+     * @throws IOException if unable to read policyFile
      */
     public Policy(File policyFile) throws IOException{
         this.policyFile = policyFile;
@@ -260,6 +261,8 @@ public abstract class Policy {
 
     /**
      * Creates the QQUpdater object and signs in
+     * @param username username for QQ Catalyst
+     * @param password password for QQ Catalyst
      */
     void qqSignIn(String username, String password) {
         if(this.updater == null) {

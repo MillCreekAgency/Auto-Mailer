@@ -106,7 +106,7 @@ public class OceanHarbor extends Policy {
 
     /**
      *  Maps Dwelling coverages to their QQ Catalyst css option number
-     * @param pdfText
+     * @param pdfText text extracts of PDF
      * @return Each coverage value mapped to the CSS option number
      */
     public HashMap<Integer, Double> findDwellingCoverages(String pdfText) {

@@ -55,15 +55,27 @@ public class ApplicationWindow extends Application {
     private final static int UPDATE_BUTTON = 9;
 
 
+    /**
+     * Start point of application. Launches GUI
+     * @param args commandline arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Sets the username and password fields to later be used to login into QQ Catalyst
+     * @param username Username of QQ Catalyst
+     * @param password Password of QQ Catalyst
+     */
     public void login(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
+    /**
+     * Sets up login view, once moved past calls {@link #login(String, String)}
+     */
     public void setUpLogin() {
         Button login = new Button("Login");
         Text scenetitle = new Text("Welcome");
@@ -95,16 +107,21 @@ public class ApplicationWindow extends Application {
 
     }
 
+    /**
+     * Sets up the updater view
+     */
     public void setUpUpdater() {
         this.setUpFileSelector();
-        this.setText();
+        this.createTitle();
         this.createCompanySelector(root);
         this.setOptionMenu();
         this.updateButton(this, this.username, this.password);
     }
 
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(Stage primaryStage){
         primaryStage.setTitle("Mill Creek Agency Auto Insurance Mailer");
@@ -122,6 +139,10 @@ public class ApplicationWindow extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Sets the policy file once selected from file view
+     * @param policyFile the PDF file object
+     */
     public void setPolicyFile(File policyFile) {
         this.policyFile = policyFile;
         root.getChildren().remove(this.fileSelect);
@@ -140,6 +161,10 @@ public class ApplicationWindow extends Application {
         GridPane.setHalignment(cancelButton, HPos.CENTER);
     }
 
+    /**
+     * Creates the radio buttons for selecting a policy
+     * @param root the GridPane view
+     */
     public void createCompanySelector(GridPane root) {
         ToggleGroup companies = new ToggleGroup();
 
@@ -156,6 +181,10 @@ public class ApplicationWindow extends Application {
 
     }
 
+    /**
+     * Popup to say whether or not sending email was successful
+     * @param success if the email was successfully sent
+     */
     private void sentEmailDialog(boolean success) {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -180,6 +209,11 @@ public class ApplicationWindow extends Application {
         dialog.show();
     }
 
+    /**
+     * Asks the user for the email password to the email in config
+     * @param to the address sending to
+     * @param policy the policy file
+     */
     public void getEmailPassword(String to, Policy policy){
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -203,6 +237,11 @@ public class ApplicationWindow extends Application {
         dialog.show();
     }
 
+    /**
+     * Pop up to ask user if they want to change emails from the one found on QQ
+     * @param to The address found on QQ
+     * @param policy Policy PDF File object
+     */
     public void changeEmail(String to, Policy policy) {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -229,6 +268,9 @@ public class ApplicationWindow extends Application {
         dialog.show();
     }
 
+    /**
+     * Creates the menu for options: Update in QQ, Send to insured, and print for mortgagee
+     */
     public void setOptionMenu(){
         root.add(this.createText("Options", 16, FontWeight.NORMAL), 1, OPTION_SELECTION - 1);
 
@@ -248,6 +290,13 @@ public class ApplicationWindow extends Application {
         GridPane.setHalignment(printForMortgage, HPos.CENTER);
     }
 
+    /**
+     * Creates a text object with Helventica Neufont and given attributes
+     * @param str The string of the text object
+     * @param size the font size
+     * @param fontWeight the font weight
+     * @return Text object
+     */
     private Text createText(String str, int size, FontWeight fontWeight) {
         Text text = new Text(str);
         text.setFont(Font.font("Helventica Neue", fontWeight, size));
@@ -255,12 +304,18 @@ public class ApplicationWindow extends Application {
         return text;
     }
 
-    public void setText() {
+    /**
+     * Creates title on update menu
+     */
+    public void createTitle() {
         title = this.createText("Mill Creek Insurance Mailer", 16, FontWeight.BOLD);
         this.root.add(title, 1, TITLE_ROW);
         GridPane.setHalignment(title, HPos.CENTER);
     }
 
+    /**
+     * Creates the file selector button and viewer
+     */
     public void setUpFileSelector() {
         policyFile = null;
         root.getChildren().remove(cancelButton);
@@ -304,6 +359,9 @@ public class ApplicationWindow extends Application {
         GridPane.setHalignment(fileSelect, HPos.CENTER);
     }
 
+    /**
+     * Sets up the grip pane
+     */
     public void setUpGridPane() {
         this.root = new GridPane();
         root.setAlignment(Pos.TOP_CENTER);
@@ -313,6 +371,10 @@ public class ApplicationWindow extends Application {
 
     }
 
+    /**
+     * Creates a Pop up entitled error with a given description
+     * @param desc the description for the pop up to have
+     */
     public void errorPopup(String desc) {
         final Stage dialog = new Stage();
         dialog.setTitle("ERROR");
@@ -338,6 +400,12 @@ public class ApplicationWindow extends Application {
         grid.add(ok, 0, 2);
     }
 
+    /**
+     * Opens a dialog to ask whether to send the insured an email or letter
+     * @param email email found on QQ
+     * @param policy Policy file
+     * @param app this, for policy object to callback
+     */
     public void sendToInsured(String email, Policy policy, ApplicationWindow app) {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -387,12 +455,25 @@ public class ApplicationWindow extends Application {
         dialog.show();
     }
 
+    /**
+     *  Adds a given node to a given grid at given column and row index
+     * @param grid Grid pane to add to
+     * @param node node to add to grid
+     * @param columnIndex colmun index to add at
+     * @param rowIndex row index to add at
+     */
     private void addToGrid(GridPane grid, Node node, int columnIndex, int rowIndex) {
         grid.add(node, columnIndex, rowIndex);
         GridPane.setHalignment(node, HPos.CENTER);
     }
 
 
+    /**
+     * Creates the button to being updating the policy on QQ, send to insured, and print for mortgagee
+     * @param application This, for policy callback
+     * @param username username for QQ
+     * @param password password for QQ
+     */
     private void updateButton(ApplicationWindow application, String username, String password){
         Button update = new Button("Update Policy");
         update.setOnAction(new EventHandler<ActionEvent>() {
