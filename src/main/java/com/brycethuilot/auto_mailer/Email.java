@@ -37,10 +37,10 @@ public class Email {
     }
 
     static void setSettings(HashMap<String, String> settings) {
-        FROM = settings.get("from_email");
-        FROMNAME = settings.get("from_name");
-        HOST = settings.get("smtp_host");
-        PORT = Integer.parseInt(settings.get("port"));
+        FROM = settings.get("From_Email");
+        FROMNAME = settings.get("From_Name");
+        HOST = settings.get("SMTP_Host");
+        PORT = Integer.parseInt(settings.get("Port"));
     }
 
     /**

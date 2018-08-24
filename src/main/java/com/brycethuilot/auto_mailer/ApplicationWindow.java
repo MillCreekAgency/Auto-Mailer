@@ -66,13 +66,19 @@ public class ApplicationWindow extends Application {
         try {
             config = new Config();
         }catch (IOException io) {
+            System.out.println(io.getLocalizedMessage());
+            System.out.println("Cannot read config");
             System.exit(1);
         }
         launch(args);
     }
 
+    /**
+     * Reads the setting for the default username from the setting hash created by {@link Config}
+     * @param setting the settings hash created by {@link Config}
+     */
     static void setSetting(HashMap<String, String> setting) {
-        username = setting.get("default_qq_username");
+        username = setting.get("Default_QQ_Username");
     }
 
     /**
@@ -119,9 +125,69 @@ public class ApplicationWindow extends Application {
 
     }
 
+    /**
+     * Adds a setting with an input field to the display
+     * @param inputs the list of setting names matched with an TextField input
+     * @param settingName the name of the setting to add
+     * @param value its current value
+     * @param row the row to put the setting on
+     */
+    private void addSetting(HashMap<String, TextField> inputs, String settingName, String value, int row) {
+        TextField input = new TextField(value);
+        this.addToGrid(root, this.createText(settingName.replace('_', ' '), 16, FontWeight.NORMAL), 0, row);
+        this.addToGrid(root, input, 2, row);
+        inputs.put(settingName, input);
+    }
 
-    private void setUpSettings() {
 
+    /**
+     * Creates the view to edit settings
+     * @throws IOException if the settings file could not be read
+     */
+    private void setUpSettings() throws IOException{
+        HashMap<String, String> settings = config.readConfig();
+        this.addToGrid(root, this.createText("Settings", 20, FontWeight.NORMAL), 1 ,0);
+
+        HashMap<String, TextField> inputs = new HashMap<String, TextField>();
+
+        int i = 2;
+        for(String setting : settings.keySet()) {
+            this.addSetting(inputs, setting, settings.get(setting), i);
+            i++;
+        }
+
+        int buttonRow = settings.size() + 2;
+        Button exit = new Button("Exit");
+        exit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                root.getChildren().remove(0, root.getChildren().size());
+                setUpUpdater();
+            }
+        });
+        this.addToGrid(root, exit, 2, buttonRow);
+
+        Button save = new Button("Save");
+        save.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                saveSettings(inputs);
+            }
+        });
+        this.addToGrid(root, save, 0, buttonRow);
+    }
+
+    private void saveSettings(HashMap<String, TextField> settings){
+        HashMap<String, String> saveSettings = new HashMap<>();
+        for(String setting : settings.keySet()) {
+            saveSettings.put(setting, settings.get(setting).getText());
+        }
+
+        try {
+            config.setConfig(saveSettings);
+        }catch (IOException io) {
+            errorPopup("Unable to save settings");
+        }
     }
 
 
@@ -131,7 +197,11 @@ public class ApplicationWindow extends Application {
             @Override
             public void handle(ActionEvent event) {
                 root.getChildren().remove(0, root.getChildren().size());
-                setUpSettings();
+                try {
+                    setUpSettings();
+                }catch (IOException io) {
+                    errorPopup("Unable to open settings file");
+                }
             }
         });
         root.add(settings, 3, TITLE_ROW);
