@@ -111,14 +111,16 @@ public class OceanHarbor extends Policy {
      */
     public HashMap<Integer, Double> findDwellingCoverages(String pdfText) {
         HashMap<Integer, Double> coverages = new HashMap<Integer, Double>();
-        coverages.put(315, this.getDoubleValue(this.cutToFrom(pdfText, "Dwelling $", "Fire")));
+        coverages.put(315, this.getDoubleValue(this.cutToFrom(pdfText, "Dwelling $", "   ")));
         coverages.put(683, this.getDoubleValue(this.cutToFrom(pdfText, "Other Structure", "  ")));
         coverages.put(753, this.getDoubleValue(this.cutToFrom(pdfText, "Personal Property","  " )));
-        coverages.put(576 , this.getDoubleValue(this.cutToFrom(pdfText, "Fair Rental Value", "\n")));
-        coverages.put(576,  coverages.get(576) + this.getDoubleValue(this.cutToFrom(pdfText, "Additional Living Expense", "\n")));
+        coverages.put(415 , this.getDoubleValue(this.cutToFrom(pdfText, "Fair Rental Value", "\n")));
+        coverages.put(54,  this.getDoubleValue(this.cutToFrom(pdfText, "Additional Living Expense", "\n")));
         coverages.put(732, this.getDoubleValue(this.cutToFrom(pdfText, "Personal Liability", "\n")));
         coverages.put(602, this.getDoubleValue(this.cutToFrom(pdfText, "Medical Payments to Others", "\n")));
-        //coverages.put(728, Double.parseDouble(this.cutToFrom(pdfText, "Personal Injury",  "\n")));
+        coverages.put(728, this.getDoubleValue(this.cutToFrom(pdfText, "Personal Injury",  "\n")));
+        coverages.put(684, this.getDoubleValue(this.cutToFrom(pdfText, "Other Structure", "  ")));
+        coverages.put(576, 0.0);
         return coverages;
     }
 

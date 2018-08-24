@@ -197,6 +197,9 @@ public abstract class Policy {
      * @param pdfText extracted text from policy
      */
     private void getInfoFromPolicy(String pdfText) {
+        // Sets if dwelling policy or not
+        this.setDwelling(pdfText);
+
         // Get Insured Name
         this.setName(pdfText);
 
@@ -220,9 +223,6 @@ public abstract class Policy {
 
         // Get deductible and hurricane deductible
         this.setDeductibles(pdfText);
-
-        // Sets if dwelling policy or not
-        this.setDwelling(pdfText);
 
         // Sets the name of the company
         this.setCompany();
@@ -333,7 +333,7 @@ public abstract class Policy {
      *
      * @param to email address to send the email to
      * @param password password to the email set in the config
-     * @return if email was successfully sent
+     * @throws Exception if the email could not be sent
      */
     void sendEmail(String to, String password) throws Exception{
         // Create email class

@@ -70,6 +70,7 @@ public class ApplicationWindow extends Application {
             System.out.println("Cannot read config");
             System.exit(1);
         }
+
         launch(args);
     }
 
@@ -177,6 +178,10 @@ public class ApplicationWindow extends Application {
         this.addToGrid(root, save, 0, buttonRow);
     }
 
+    /**
+     * Saves the settings to the config
+     * @param settings the name of the settings mapped to the input
+     */
     private void saveSettings(HashMap<String, TextField> settings){
         HashMap<String, String> saveSettings = new HashMap<>();
         for(String setting : settings.keySet()) {
@@ -191,6 +196,9 @@ public class ApplicationWindow extends Application {
     }
 
 
+    /**
+     * Creates the button to get settings page
+     */
     private void createSettingsButton() {
         Button settings = new Button("Settings");
         settings.setOnAction(new EventHandler<ActionEvent>() {
@@ -204,7 +212,7 @@ public class ApplicationWindow extends Application {
                 }
             }
         });
-        root.add(settings, 3, TITLE_ROW);
+        root.add(settings, 2, TITLE_ROW);
     }
 
     /**

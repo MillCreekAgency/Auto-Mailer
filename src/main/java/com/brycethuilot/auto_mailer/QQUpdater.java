@@ -61,6 +61,13 @@ public class QQUpdater {
         } catch(org.openqa.selenium.NoSuchElementException ex) {
             System.out.println(ex.getLocalizedMessage());
         }
+
+        try{
+            driver.findElement(By.className("walkme-click-and-hover")).click();
+            sleep(2);
+        } catch(org.openqa.selenium.NoSuchElementException ex) {
+            System.out.println(ex.getLocalizedMessage());
+        }
         // Enter old policy number into search bar
         driver.findElement(By.id("contact-search-text")).sendKeys(policyNum);
         // Click go for search
@@ -238,8 +245,13 @@ public class QQUpdater {
                 WebElement selector = currentInput.findElement(By.name("CoverageID"));
                 Select coverageSelect = new Select(selector);
                 WebElement input = currentInput.findElement(By.name("CovLimDed"));
+                if(coverageSelect.getFirstSelectedOption().getAttribute("value") == null){
+                    return;
+                }
                 double coverage = coverages.get(Integer.parseInt(coverageSelect.getFirstSelectedOption().getAttribute("value")));
-                fillNumberInput(input, coverage);
+                if(input.isDisplayed()) {
+                    fillNumberInput(input, coverage);
+                }
             }catch (org.openqa.selenium.NoSuchElementException ex) {
                 System.out.println(ex.getLocalizedMessage());
             }

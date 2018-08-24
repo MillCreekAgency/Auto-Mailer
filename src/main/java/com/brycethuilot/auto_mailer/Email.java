@@ -49,8 +49,9 @@ public class Email {
      * @param subject the subject of the email
      * @param body the body of the email
      * @param attachment attachment file
-     * @param fileName the name to give to the attacment
+     * @param fileName the name to give to the attachment
      * @return true if successfully sent, false if not
+     * @throws Exception if the email could not be sent
      */
     boolean sendEmail(String to, String subject, String body , String attachment, String fileName) throws Exception{
         Transport transport;
@@ -163,7 +164,7 @@ public class Email {
     private String formatNewBusinessEmail(String effectiveDate, String expirationDate) {
         return String.join(
                 System.getProperty("line.separator"),
-                "<p>Thank you for choosing the Mill Creek Agency for your insurance necessities! We appreciate folks who share our sensibilities and believe there is value in keeping things personal. We believe that comfort is parallel to security, and we will always make sure that you feel protected by accurate coverage and friendly, familiar customer service. To us, you aren’t a number, you’re our valued client.</p>",
+                "<p>Thank you for choosing the Mill Creek Agency for your insurance necessities! We appreciate folks who share our sensibilities and believe there is value in keeping things personal. We believe that comfort is parallel to security, and we will always make sure that you feel protected by accurate coverage and friendly, familiar customer service. To us, you aren't a number, you're our valued client.</p>",
                 "<br>",
                 "<p>Enclosed, please find a copy of your new insurance policy with the effective date of " + effectiveDate + "and an expiration date of " + expirationDate +". If you ever need assistance understanding your policy, counsel on any life changes that may affect your coverage needs, or simply need to pay a bill, we will be more than happy to provide you with these services and anything else within our scope of knowledge if you give us a call at <a href=tel:\"+16317514653\">631-751-4653.</a></p>",
                 "<br>",
