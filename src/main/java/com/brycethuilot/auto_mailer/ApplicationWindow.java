@@ -313,7 +313,7 @@ public class ApplicationWindow extends Application {
             }
         });
         grid.add(ok, 0, 1);
-        Scene dialogScene = new Scene(grid, 500, 500);
+        Scene dialogScene = new Scene(grid, 600, 400);
         dialog.setScene(dialogScene);
         dialog.show();
     }
@@ -339,10 +339,10 @@ public class ApplicationWindow extends Application {
                 dialog.close();
                 try {
                     policy.sendEmail(to, emailPassword.getText());
+                    sentEmailDialog(true);
                 }catch(Exception ex) {
                     sentEmailDialog(false);
                 }
-                sentEmailDialog(true);
             }
         });
         grid.add(ok, 0, 2);

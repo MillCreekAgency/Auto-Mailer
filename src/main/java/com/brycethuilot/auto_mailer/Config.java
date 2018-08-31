@@ -27,7 +27,15 @@ public class Config {
      */
     Config() throws IOException {
         this.firstTimeSetUp();
-        HashMap<String, String> settings  =this.readConfig();
+        this.setConfig();
+    }
+
+    /**
+     * Sets the config settings for classes
+     * @throws IOException if the file could not be read
+     */
+    private void setConfig() throws IOException{
+        HashMap<String, String> settings  = this.readConfig();
         Email.setSettings(settings);
         ApplicationWindow.setSetting(settings);
     }
@@ -93,5 +101,6 @@ public class Config {
         writer.write(settings.toString());
 
         writer.close();
+        this.setConfig();
     }
 }

@@ -393,16 +393,9 @@ public abstract class Policy {
         if(str.equals("")) {
             return "0";
         }
-        StringBuilder string  = new StringBuilder(str);
-        int indexOfComma = string.indexOf(",");
-        int indexOfDollarSign = string.indexOf("$");
-        if (indexOfComma != -1) {
-            string.deleteCharAt(indexOfComma);
-        }
-        if(indexOfDollarSign != -1) {
-            string.deleteCharAt(indexOfDollarSign);
-        }
-        return string.toString();
+        str = str.replaceAll(",", "");
+        str = str.replace("$", "");
+       return str;
     }
 
     /**
