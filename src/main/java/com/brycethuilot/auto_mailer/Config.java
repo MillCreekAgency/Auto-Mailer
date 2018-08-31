@@ -50,7 +50,7 @@ public class Config {
                 new File(SETTINGS_DIRECTORY).mkdirs();
                 settings.createNewFile();
                 FileWriter settingsFile =  new FileWriter(settings);
-                settingsFile.write("From_Email=bryce@millcreekagency\n" +
+                settingsFile.write("From_Email=bryce@millcreekagency.com\n" +
                         "Port=587\n" +
                         "Default_QQ_Username=dean@millcreekagency.com\n" +
                         "SMTP_Host=smtp.office365.com\n" +
