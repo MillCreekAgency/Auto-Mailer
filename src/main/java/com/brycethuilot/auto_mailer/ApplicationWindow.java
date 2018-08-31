@@ -342,6 +342,7 @@ public class ApplicationWindow extends Application {
                     sentEmailDialog(true);
                 }catch(Exception ex) {
                     sentEmailDialog(false);
+                    System.out.println(ex.getMessage());
                 }
             }
         });

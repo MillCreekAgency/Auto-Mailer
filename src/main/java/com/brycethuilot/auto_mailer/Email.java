@@ -21,7 +21,7 @@ import javax.activation.*;
 public class Email {
     static String FROM;
     static String FROMNAME;
-    static String SMTP_USERNAME = FROM;
+    static String SMTP_USERNAME;
     static String CONFIGSET = "ConfigSet";
     static String HOST ;
     static int PORT ;
@@ -38,6 +38,7 @@ public class Email {
 
     static void setSettings(HashMap<String, String> settings) {
         FROM = settings.get("From_Email");
+        SMTP_USERNAME = FROM;
         FROMNAME = settings.get("From_Name");
         HOST = settings.get("SMTP_Host");
         PORT = Integer.parseInt(settings.get("Port"));
@@ -103,11 +104,8 @@ public class Email {
                 "<p>Enclosed, please find a copy of your policy renewal.</p>",
                 "<br>",
                 "<p>Because we value you as a client and policyholder, we would appreciate the opportunity to continue serving all your insurances needs. This is also a great time to discuss your coverage options, any changes that ma y need to be made, and any discounts you may be qualified to receive.</p>",
-                "<br>",
                 "<p>Kindly review enclosed documents for accuracy. Please feel free to call us at (631)751-4653 any time Monday through Friday between 9 a.m.and 5 p.m. We can take care of everything by telephone, or schedule an appointment to meet at your convenience.</p>",
-                "<br>",
                 "<p>I hope we've done everything possible to earn your future insurance business. I look forward to speaking with you soon and would like to say thank you again for choosing The Mill Creek Agency, Inc. </p>",
-                "<br>",
                 "<p>If you have any further questions please contact Info@millcreekagency.com. Please do not reply to this email.</p>"
         );
     }
@@ -134,10 +132,8 @@ public class Email {
                 "<center><p>**Please ignore this message if you have already received this**</p></center>",
                 "<br>",
                 "<p>Dear " + name + ",</p>",
-                "<br>",
-                "<p>RE: Company: <strong> + " + company + "</strong></p>",
-                "<br>",
-                "<p>com.brycethuilot.auto_mailer.Policy Number: <strong>" + policyNumber + "</strong></p>",
+                "<p>RE: Company: <strong>" + company + "</strong></p>",
+                "<p>Policy Number: <strong>" + policyNumber + "</strong></p>",
                 "<br>",
                 renewal ? this.formatRenewalEmail() : this.formatNewBusinessEmail(effectiveDate, expirationDate),
                 "<br><br>",
