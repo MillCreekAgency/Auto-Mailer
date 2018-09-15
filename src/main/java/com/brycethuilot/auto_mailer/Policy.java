@@ -35,6 +35,7 @@ import java.util.HashMap;
  * @version  %I%, %G%
  * @since 1.0
  */
+
 public abstract class Policy {
 
     /**
@@ -65,9 +66,12 @@ public abstract class Policy {
     // If the the policy is dwelling, if not it is homeowners
     boolean dwelling;
 
-
     // QQUpdater to update policy on QQCatalyst
     private QQUpdater updater;
+
+    // If the application is in remote mode (Will not print policies, instead will email to a given email)
+    private static boolean remoteMode;
+    public static String remoteEmail;
 
 
     // Save policy file
@@ -186,6 +190,8 @@ public abstract class Policy {
      */
     protected abstract void setCoverages(String pdfText);
 
+
+
     /**
      * Sets the name of the company
      */
@@ -299,7 +305,6 @@ public abstract class Policy {
     void sendLetter() throws IOException {
         Letter letter = new Letter(this.policyNumber, this.name, this.address);
         letter.addPolicy(this.getLetterPages(this.policyFile));
-        System.out.println("Running");
         letter.print();
     }
 

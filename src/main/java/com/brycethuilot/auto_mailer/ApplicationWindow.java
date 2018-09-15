@@ -57,6 +57,10 @@ public class ApplicationWindow extends Application {
     private final static int OPTION_SELECTION = 8;
     private final static int UPDATE_BUTTON = 9;
 
+    private static boolean remoteMode;
+    private static String remoteEmail;
+    private boolean sentRemote = false;
+
 
     /**
      * Start point of application. Launches GUI
@@ -80,6 +84,8 @@ public class ApplicationWindow extends Application {
      */
     static void setSetting(HashMap<String, String> setting) {
         username = setting.get("Default_QQ_Username");
+        remoteMode = setting.get("Remote_mode").equals("true");
+        remoteEmail = setting.get("Remote_Email");
     }
 
     /**
@@ -555,6 +561,10 @@ public class ApplicationWindow extends Application {
             public void handle(ActionEvent event) {
                 dialog.close();
                 try {
+                    if(remoteMode) {
+                        policy.getEmailInfo(remoteEmail, app);
+                        sentRemote = true;
+                    }
                     policy.sendLetter();
                 }catch (IOException io) {
                     errorPopup("Unable to send letter");
@@ -630,7 +640,9 @@ public class ApplicationWindow extends Application {
 
                 if(printForMortgage.isSelected() && policy.sendToMortgagee()) {
                     try {
-                        policy.printMortgagee();
+                        if( !(remoteMode && sentRemote)) {
+                            policy.printMortgagee();
+                        }
                     } catch (IOException io) {
                         errorPopup("Unable to print mortgage pages");
                     }

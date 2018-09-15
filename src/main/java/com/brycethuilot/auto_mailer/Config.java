@@ -55,7 +55,8 @@ public class Config {
                         "Default_QQ_Username=dean@millcreekagency.com\n" +
                         "SMTP_Host=smtp.office365.com\n" +
                         "From_Name=Bryce Thuilot\n" +
-                        "Remote_mode=false");
+                        "Remote_mode=false\n" +
+                        "Remote_Email=bryce@millcreekagency.com");
                 settingsFile.flush();
                 settingsFile.close();
             } catch (IOException io){
