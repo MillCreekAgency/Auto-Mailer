@@ -329,7 +329,7 @@ public class ApplicationWindow extends Application {
      * @param to the address sending to
      * @param policy the policy file
      */
-    public void getEmailPassword(String to, Policy policy){
+    public void getEmailPassword(String to, Policy policy, boolean remote, boolean letter){
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(primaryStage);
@@ -344,7 +344,15 @@ public class ApplicationWindow extends Application {
             public void handle(ActionEvent event) {
                 dialog.close();
                 try {
-                    policy.sendEmail(to, emailPassword.getText());
+                    if(remote) {
+                        if(letter) {
+                            policy.sendRemoteLetter(emailPassword.getText());
+                        } else {
+                            policy.sendRemoteEmail(emailPassword.getText());
+                        }
+                    }else {
+                      policy.sendEmail(to, emailPassword.getText());
+                    }
                     sentEmailDialog(true);
                 }catch(Exception ex) {
                     sentEmailDialog(false);
@@ -363,7 +371,7 @@ public class ApplicationWindow extends Application {
      * @param to The address found on QQ
      * @param policy Policy PDF File object
      */
-    public void changeEmail(String to, Policy policy) {
+    public void changeEmail(String to, Policy policy, boolean remote, boolean letter) {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(primaryStage);
@@ -378,7 +386,7 @@ public class ApplicationWindow extends Application {
         ok.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                getEmailPassword(emailInput.getText(), policy);
+                getEmailPassword(emailInput.getText(), policy, remote, letter);
                 dialog.close();
             }
         });
@@ -551,7 +559,7 @@ public class ApplicationWindow extends Application {
             @Override
             public void handle(ActionEvent event) {
                 dialog.close();
-                policy.getEmailInfo(email, app);
+                policy.getEmailInfo(email, app, false, false);
             }
         });
 
@@ -562,10 +570,11 @@ public class ApplicationWindow extends Application {
                 dialog.close();
                 try {
                     if(remoteMode) {
-                        policy.getEmailInfo(remoteEmail, app);
+                        policy.getEmailInfo(remoteEmail, app, true, true);
                         sentRemote = true;
+                    }else {
+                      policy.sendLetter();
                     }
-                    policy.sendLetter();
                 }catch (IOException io) {
                     errorPopup("Unable to send letter");
                 }
@@ -640,7 +649,11 @@ public class ApplicationWindow extends Application {
 
                 if(printForMortgage.isSelected() && policy.sendToMortgagee()) {
                     try {
-                        if( !(remoteMode && sentRemote)) {
+                        if(remoteMode) {
+                            if(!sentRemote) {
+                                policy.getEmailInfo(remoteEmail,  application, true, false);
+                            }
+                        } else {
                             policy.printMortgagee();
                         }
                     } catch (IOException io) {

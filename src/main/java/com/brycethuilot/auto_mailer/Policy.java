@@ -93,6 +93,11 @@ public abstract class Policy {
         this.getInfoFromPolicy(pdfText);
     }
 
+    public static void setConfig(HashMap<String, String> settings) {
+        remoteMode = settings.get("Remote_mode").equals("true");
+        remoteEmail = settings.get("Remote_Email");
+    }
+
 
     /**
      * Takes in a PDF and extracts and returns the text contents of it
@@ -324,12 +329,25 @@ public abstract class Policy {
     public abstract void printMortgagee() throws  IOException;
 
     /**
-     * Opens the {@link ApplicationWindow#changeEmail(String, Policy) changeEmail} popup from application window
+     * Opens the {@link ApplicationWindow#changeEmail(String, Policy, boolean, boolean)}  changeEmail} popup from application window
      * @param to the email to send to in case the user doesn't change
      * @param applicationWindow the application window to open the popup
      */
-    void getEmailInfo(String to, ApplicationWindow applicationWindow) {
-        applicationWindow.changeEmail(to, this);
+    void getEmailInfo(String to, ApplicationWindow applicationWindow, boolean remote, boolean letter) {
+        applicationWindow.changeEmail(to, this, remote, letter);
+    }
+
+
+    void sendRemoteEmail(String password) throws Exception{
+        Email email = new Email(password);
+
+        email.sendRemoteEmail(false, this.policyFile.getAbsolutePath(), remoteEmail);
+    }
+
+    void sendRemoteLetter(String password) throws Exception{
+        Email email = new Email(password);
+
+        email.sendRemoteEmail(true, this.policyFile.getAbsolutePath(), remoteEmail);
     }
 
 

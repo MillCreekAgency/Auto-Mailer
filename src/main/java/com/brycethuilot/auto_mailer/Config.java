@@ -38,6 +38,7 @@ public class Config {
         HashMap<String, String> settings  = this.readConfig();
         Email.setSettings(settings);
         ApplicationWindow.setSetting(settings);
+        Policy.setConfig(settings);
     }
 
     /**

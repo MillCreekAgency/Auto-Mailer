@@ -34,6 +34,7 @@ public class Email {
      */
     Email(String stmpPassword) {
         this.stmpPassword = stmpPassword;
+        System.out.print("Pass: " + stmpPassword);
     }
 
     static void setSettings(HashMap<String, String> settings) {
@@ -108,6 +109,18 @@ public class Email {
                 "<p>I hope we've done everything possible to earn your future insurance business. I look forward to speaking with you soon and would like to say thank you again for choosing The Mill Creek Agency, Inc. </p>",
                 "<p>If you have any further questions please contact Info@millcreekagency.com. Please do not reply to this email.</p>"
         );
+    }
+
+
+    void sendRemoteEmail(boolean mailLetter, String attachment, String to) throws Exception {
+      String emailBody;
+      if (mailLetter) {
+        emailBody = "Could you mail this to the address on the policy and send to the mortgagee if there is one?";
+      }else {
+        emailBody = "Could you just send this to the mortgagee";
+      }
+      this.sendEmail(to, "Insurance Policy", emailBody, attachment, attachment);
+      System.out.println("To: " + to);
     }
 
 
